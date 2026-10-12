@@ -252,7 +252,7 @@ static int   resT=0, countdownT=0;
 static bool  replayingBest=false;
 
 struct DrPart{ float x,y,vx,vy; uint8_t life; };
-static DrPart parts[20];
+static DrPart* parts = nullptr;   // [20] on the heap while the app is open
 static int shakeT=0;
 static void fx(float x,float y,float vx_,float vy_,uint8_t l){
     for(int i=0;i<20;i++) if(!parts[i].life){ parts[i]={x,y,vx_,vy_,l}; return; }
@@ -265,7 +265,7 @@ static void fxTick(){
     if(shakeT) shakeT--;
 }
 struct DrPop{ char txt[14]; int x,y; uint8_t t; };
-static DrPop pops[3];
+static DrPop* pops = nullptr;   // [3] on the heap while the app is open
 static void popup(const char* s,int x,int y){
     int slot=0; uint8_t lo=255;
     for(int i=0;i<3;i++) if(pops[i].t<lo){lo=pops[i].t;slot=i;}
@@ -831,7 +831,29 @@ void duneriderTick(){
     }
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_dune {
+    DrPart parts[20];
+    DrPop pops[3];
+};
+static AppHeap_dune* g_heap_dune = nullptr;
+static void heapUp_dune(){
+    if (!g_heap_dune) g_heap_dune = (AppHeap_dune*)malloc(sizeof(AppHeap_dune));
+    if (!g_heap_dune) return;
+    memset(g_heap_dune, 0, sizeof(AppHeap_dune));
+    parts = g_heap_dune->parts;
+    pops = g_heap_dune->pops;
+}
+static void heapDown_dune(){
+    free(g_heap_dune); g_heap_dune = nullptr;
+    parts = nullptr;
+    pops = nullptr;
+}
+
 void duneriderEnter(){
+    heapUp_dune();                       // first: everything below may use the buffers
     fb.setRotation(0);
     drLoad();
     scr=SC_MENU; menuSel=0;
@@ -847,4 +869,5 @@ void duneriderEnter(){
 void duneriderShutdown(){
     drRadioDown(true);
     drFlush();
+    heapDown_dune();                     // last: after saves and radio teardown
 }

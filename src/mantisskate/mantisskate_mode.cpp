@@ -144,7 +144,7 @@ static void skAward(uint8_t a) {
 enum FeatType : uint8_t { F_NONE = 0, F_CONE, F_HYDRANT, F_RAIL, F_GAP, F_BOX, F_KICKER, F_STAIRS };
 struct Feat { uint8_t type; int32_t x; int16_t w; };
 static constexpr int MAX_FEATS = 20;
-static Feat   feats[MAX_FEATS];
+static Feat* feats = nullptr;   // [MAX_FEATS] on the heap while the app is open
 static int32_t genX = 0;                     // next world-x to generate at
 static uint32_t runSeed = 1, rngS = 1;
 static uint32_t skRng() { rngS = rngS * 1664525u + 1013904223u; return rngS >> 8; }
@@ -284,7 +284,7 @@ static uint32_t frameNo;
 
 // ---- fx ----------------------------------------------------------------------
 struct SkPart { float x, y, vx, vy; uint8_t life, kind; };  // kind 0 dust 1 spark 2 star
-static SkPart parts[24];
+static SkPart* parts = nullptr;   // [24] on the heap while the app is open
 static int    shakeT = 0;
 static void fxSpawn(float x, float y, float vx, float vy, uint8_t life, uint8_t kind) {
     for (int i = 0; i < 24; i++)
@@ -307,7 +307,7 @@ static void fxTick() {
 
 // ---- popups ------------------------------------------------------------------
 struct SkPop { char txt[16]; int x, y; uint8_t t; uint8_t big; };
-static SkPop pops[4];
+static SkPop* pops = nullptr;   // [4] on the heap while the app is open
 static void popup(const char* s, int x, int y, bool big = false) {
     int slot = 0; uint8_t lo = 255;
     for (int i = 0; i < 4; i++) { if (pops[i].t < lo) { lo = pops[i].t; slot = i; } }
@@ -1346,7 +1346,32 @@ void mantisskateTick() {
     }
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_skate {
+    SkPart parts[24];
+    Feat feats[MAX_FEATS];
+    SkPop pops[4];
+};
+static AppHeap_skate* g_heap_skate = nullptr;
+static void heapUp_skate(){
+    if (!g_heap_skate) g_heap_skate = (AppHeap_skate*)malloc(sizeof(AppHeap_skate));
+    if (!g_heap_skate) return;
+    memset(g_heap_skate, 0, sizeof(AppHeap_skate));
+    parts = g_heap_skate->parts;
+    feats = g_heap_skate->feats;
+    pops = g_heap_skate->pops;
+}
+static void heapDown_skate(){
+    free(g_heap_skate); g_heap_skate = nullptr;
+    parts = nullptr;
+    feats = nullptr;
+    pops = nullptr;
+}
+
 void mantisskateEnter() {
+    heapUp_skate();                       // first: everything below may use the buffers
     fb.setRotation(0);
     skLoad();
     scr = SC_MENU;
@@ -1371,4 +1396,5 @@ void mantisskateEnter() {
 void mantisskateShutdown() {
     skRadioDown(true);
     skFlush();
+    heapDown_skate();                     // last: after saves and radio teardown
 }

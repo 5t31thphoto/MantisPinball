@@ -145,7 +145,7 @@ static void ptAward(uint8_t a){
 struct PWall { float x1,y1,x2,y2; float rest; uint8_t kind; };  // kind: 0 wall 1 furniture 2 gate
 enum { WK_WALL=0, WK_FURN=1, WK_GATE=2 };
 static constexpr int MAX_W = 44;
-static PWall pw[MAX_W]; static int pwN=0;
+static PWall* pw = nullptr; /* [MAX_W]: heap while open */ static int pwN=0;
 static void addW(float x1,float y1,float x2,float y2,float rest,uint8_t k=WK_WALL){
     if(pwN<MAX_W) pw[pwN++] = {x1,y1,x2,y2,rest,k};
 }
@@ -153,7 +153,7 @@ static void addW(float x1,float y1,float x2,float y2,float rest,uint8_t k=WK_WAL
 struct Rock { float x,y,r; uint8_t hit; };          // circular bumper
 struct Zone { float x,y,w,h; uint8_t kind; };       // 0 sand 1 water
 static constexpr int MAX_ROCK=5, MAX_ZONE=3;
-static Rock rocks[MAX_ROCK]; static int rockN=0;
+static Rock* rocks = nullptr; /* [MAX_ROCK]: heap while open */ static int rockN=0;
 static Zone zones[MAX_ZONE]; static int zoneN=0;
 
 // windmill: a blade segment spinning about a hub (dynamic wall slot)
@@ -948,7 +948,29 @@ void mantisputtTick(){
     }
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_putt {
+    PWall pw[MAX_W];
+    Rock rocks[MAX_ROCK];
+};
+static AppHeap_putt* g_heap_putt = nullptr;
+static void heapUp_putt(){
+    if (!g_heap_putt) g_heap_putt = (AppHeap_putt*)malloc(sizeof(AppHeap_putt));
+    if (!g_heap_putt) return;
+    memset(g_heap_putt, 0, sizeof(AppHeap_putt));
+    pw = g_heap_putt->pw;
+    rocks = g_heap_putt->rocks;
+}
+static void heapDown_putt(){
+    free(g_heap_putt); g_heap_putt = nullptr;
+    pw = nullptr;
+    rocks = nullptr;
+}
+
 void mantisputtEnter(){
+    heapUp_putt();                       // first: everything below may use the buffers
     fb.setRotation(0);
     ptLoad();
     scr=SC_MENU; menuSel=0;
@@ -971,4 +993,5 @@ void mantisputtEnter(){
 void mantisputtShutdown(){
     ptRadioDown(true);
     ptFlush();
+    heapDown_putt();                     // last: after saves and radio teardown
 }

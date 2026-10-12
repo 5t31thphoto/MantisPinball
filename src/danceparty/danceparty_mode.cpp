@@ -43,16 +43,18 @@ struct __attribute__((packed)) MnHeader {
 };
 static_assert(sizeof(MnHeader) == HDR, "MantisNow header must be 28 bytes");
 struct RxSlot { volatile uint8_t full; uint8_t len; uint8_t data[64]; };
-static RxSlot rx[8];
+static RxSlot* rx = nullptr;   // [8] on the heap while the app is open
 static volatile uint8_t rxW = 0;
 static uint8_t rxR = 0;
-static uint32_t dedupNode[16], dedupPkt[16];
+static uint32_t* dedupNode = nullptr;   // [16] on the heap while the app is open
+static uint32_t* dedupPkt = nullptr;   // [16] on the heap while the app is open
 static int dedupHead = 0;
 static bool radioUp = false;
 static const uint8_t BCAST[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 
 static void onRecv(const uint8_t* mac, const uint8_t* d, int len) {     // copy and return
     (void)mac;
+    if (!rx) return;
     if (len < HDR || len > 64 || d[0] != MN_MAGIC || d[1] != MN_VERSION || d[2] != K_DANCE) return;
     RxSlot& s = rx[rxW % 8];
     if (s.full) return;
@@ -363,8 +365,9 @@ void dancepartyTick() {
     (void)lastAutoBeat;                               // no invented groove any more
     if (hype) --hype;
     // a Core2 that starts a party pulls us straight onto the floor
-    bool hostBeating = synced() && lastBeatMs && now - lastBeatMs < 3000;
-    if ((dscr == DS_WELCOME || dscr == DS_LOBBY) && hostBeating) { dscr = DS_DANCE; partyOn = true; }
+    // ANY frame from the Synapse (its 1 s heartbeat, a move, a beat) puts us on
+    // the floor; without music the dancer idles and says it's waiting for it.
+    if ((dscr == DS_WELCOME || dscr == DS_LOBBY) && synced()) { dscr = DS_DANCE; partyOn = true; }
     if (dscr == DS_DANCE && !synced()) dscr = DS_LOBBY;   // host gone: wait for it again
     if (now - enterAt < 250) return;
     bool lE = chordLEdge(), rE = chordREdge();
@@ -508,11 +511,36 @@ void dancepartyDraw() {
     fb.pushSprite(0, 0);
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_dance {
+    RxSlot rx[8];
+    uint32_t dedupNode[16];
+    uint32_t dedupPkt[16];
+};
+static AppHeap_dance* g_heap_dance = nullptr;
+static void heapUp_dance(){
+    if (!g_heap_dance) g_heap_dance = (AppHeap_dance*)malloc(sizeof(AppHeap_dance));
+    if (!g_heap_dance) return;
+    memset(g_heap_dance, 0, sizeof(AppHeap_dance));
+    rx = g_heap_dance->rx;
+    dedupNode = g_heap_dance->dedupNode;
+    dedupPkt = g_heap_dance->dedupPkt;
+}
+static void heapDown_dance(){
+    free(g_heap_dance); g_heap_dance = nullptr;
+    rx = nullptr;
+    dedupNode = nullptr;
+    dedupPkt = nullptr;
+}
+
 void dancepartyEnter() {
+    heapUp_dance();                       // first: everything below may use the buffers
     fb.setRotation(0);
     chordGuardReset();
-    memset((void*)rx, 0, sizeof(rx)); rxW = 0; rxR = 0;
-    memset(dedupNode, 0, sizeof(dedupNode)); memset(dedupPkt, 0, sizeof(dedupPkt));
+    memset((void*)rx, 0, (sizeof(RxSlot)*(8))); rxW = 0; rxR = 0;
+    memset(dedupNode, 0, (sizeof(uint32_t)*(16))); memset(dedupPkt, 0, (sizeof(uint32_t)*(16)));
     bpm = 0.0f; beatAnchor = millis(); lastBeatMs = 0; barAnchor = 0; move = MV_BOB; intensity = 180;
     lastHostMs = 0; hostCall[0] = 0; partyOn = true; hype = 0; frameNo = 0; lastAutoBeat = 0;
     dscr = DS_WELCOME; menuSel = 0; tapN = 0; lHeldDown = false;
@@ -522,4 +550,5 @@ void dancepartyEnter() {
 
 void dancepartyShutdown() {
     radioStop();
+    heapDown_dance();                     // last: after saves and radio teardown
 }

@@ -72,7 +72,7 @@ struct Wall { float x1,y1,x2,y2,nx,ny,restitution; };
 static constexpr int MAX_BALLS = 3;
 static Ball   balls[MAX_BALLS];
 static Flipper flipL, flipR;
-static Wall   walls[5];
+static Wall* walls = nullptr;   // [5] on the heap while the app is open
 
 static void closestPointOnSegment(float ax,float ay,float bx,float by,
                                   float px,float py,float&cx,float&cy){
@@ -209,14 +209,14 @@ struct Ship {
     uint8_t flash;
     bool on;
 };
-static Ship ships[MAX_SHIPS];
+static Ship* ships = nullptr;   // [MAX_SHIPS] on the heap while the app is open
 static int  shipCount=0;
 static float formDrift=0;      // horizontal sway of the whole formation
 static float sinkRate=0.014f;
 
 static constexpr int MAX_SHOTS=6;
 struct Shot { float x,y,vy; bool on; };
-static Shot shots[MAX_SHOTS];
+static Shot* shots = nullptr;   // [MAX_SHOTS] on the heap while the app is open
 
 static constexpr int MAX_PU=3;
 struct Powerup { float x,y,vy; uint8_t kind; bool on; };  // 0 blaster,1 multiball,2 powerflip,3 shield
@@ -243,7 +243,7 @@ static void say(const char* t){ snprintf(toast,sizeof(toast),"%s",t); toastT=mil
 
 // ---- wave construction -----------------------------------------------------
 static void buildWave(int w){
-    memset(ships,0,sizeof(ships));
+    memset(ships,0,(sizeof(Ship)*(MAX_SHIPS)));
     shipCount=0;
     int cols = 5;
     int rows = 2 + (w>2?1:0) + (w>5?1:0);
@@ -643,12 +643,37 @@ void mantisvadersDraw(){
 // ===========================================================================
 //  LIFECYCLE
 // ===========================================================================
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_vaders {
+    Ship ships[MAX_SHIPS];
+    Wall walls[5];
+    Shot shots[MAX_SHOTS];
+};
+static AppHeap_vaders* g_heap_vaders = nullptr;
+static void heapUp_vaders(){
+    if (!g_heap_vaders) g_heap_vaders = (AppHeap_vaders*)malloc(sizeof(AppHeap_vaders));
+    if (!g_heap_vaders) return;
+    memset(g_heap_vaders, 0, sizeof(AppHeap_vaders));
+    ships = g_heap_vaders->ships;
+    walls = g_heap_vaders->walls;
+    shots = g_heap_vaders->shots;
+}
+static void heapDown_vaders(){
+    free(g_heap_vaders); g_heap_vaders = nullptr;
+    ships = nullptr;
+    walls = nullptr;
+    shots = nullptr;
+}
+
 void mantisvadersEnter(){
+    heapUp_vaders();                       // first: everything below may use the buffers
     fb.setRotation(0);
     mvLoad();
     buildWalls();
     initFlippers();
-    memset(shots,0,sizeof(shots));
+    memset(shots,0,(sizeof(Shot)*(MAX_SHOTS)));
     memset(pus,0,sizeof(pus));
     for(int i=0;i<MAX_BALLS;i++) balls[i].on=false;
     resetBall(balls[0]);
@@ -662,4 +687,5 @@ void mantisvadersShutdown(){
     if(score>mv.hiScore){ mv.hiScore=score; mvDirty=true; }
     if((uint16_t)wave>mv.bestWave){ mv.bestWave=(uint16_t)wave; mvDirty=true; }
     mvFlush();
+    heapDown_vaders();                     // last: after saves and radio teardown
 }

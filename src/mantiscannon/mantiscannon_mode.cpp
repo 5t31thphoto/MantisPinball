@@ -134,7 +134,7 @@ static void mcAward(uint8_t a) {
 // ---- world ------------------------------------------------------------------
 // Terrain as a heightfield. Stored as y-offset from 100 so it fits a byte
 // (140..300 -> 40..200); the draft shipped raw y through uint8_t and wrapped.
-static uint8_t  mcGround[W];                   // ground y = 100 + mcGround[x]
+static uint8_t* mcGround = nullptr; /* [W]: heap while open */                   // ground y = 100 + mcGround[x]
 static inline int mcGY(int x) {
     if (x < 0) x = 0;
     if (x >= W) x = W - 1;
@@ -295,7 +295,7 @@ static int mcDamageTo(const McCannon& c, int ix, int iy) {
 
 // ---- fx ---------------------------------------------------------------------
 struct McPart { float x, y, vx, vy; uint8_t life; };
-static McPart parts[18];
+static McPart* parts = nullptr; /* [18]: heap while open */
 static int    shakeT = 0;
 
 static void mcBoom(int x, int y) {
@@ -1130,7 +1130,29 @@ void mantiscannonDraw() {
 // ─────────────────────────────────────────────────────────────────────────────
 //  LIFECYCLE
 // ─────────────────────────────────────────────────────────────────────────────
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_cannon {
+    McPart parts[18];
+    uint8_t mcGround[W];
+};
+static AppHeap_cannon* g_heap_cannon = nullptr;
+static void heapUp_cannon(){
+    if (!g_heap_cannon) g_heap_cannon = (AppHeap_cannon*)malloc(sizeof(AppHeap_cannon));
+    if (!g_heap_cannon) return;
+    memset(g_heap_cannon, 0, sizeof(AppHeap_cannon));
+    parts = g_heap_cannon->parts;
+    mcGround = g_heap_cannon->mcGround;
+}
+static void heapDown_cannon(){
+    free(g_heap_cannon); g_heap_cannon = nullptr;
+    parts = nullptr;
+    mcGround = nullptr;
+}
+
 void mantiscannonEnter() {
+    heapUp_cannon();                       // first: everything below may use the buffers
     fb.setRotation(0);
     mcLoad();
     scr = SC_MENU;
@@ -1160,4 +1182,5 @@ void mantiscannonEnter() {
 void mantiscannonShutdown() {
     mcRadioDown(true);                            // BYE + full radio teardown
     mcFlush();                                    // dirty-flag guarded
+    heapDown_cannon();                     // last: after saves and radio teardown
 }

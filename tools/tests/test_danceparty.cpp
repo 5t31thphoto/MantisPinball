@@ -39,7 +39,7 @@ int main(){
   tapL(); check(menuSel==1, "L moves to TAP TEMPO"); tapL(); check(menuSel==0, "L wraps back to DANCE WITH CORE2");
   tapR(); check(dscr==DS_LOBBY, "R on DANCE WITH CORE2 opens the lobby");
   uint32_t pk=1;
-  feed(dframe(2, pk++, {0,0})); step(); check(dscr==DS_LOBBY, "START alone (no beat yet) keeps waiting");
+  feed(dframe(2, pk++, {0,0})); step(); check(dscr==DS_DANCE && !beatLive(), "the Synapse heartbeat alone (no music yet) joins the party, idling");
   feed(dframe(0, pk++, {128,0, 2, 0,0,0,0})); step();
   check(dscr==DS_DANCE && beatLive() && (int)bpm==128 && barAnchor==2, "first Synapse beat -> dancing at its 128 bpm");
   feed(dframe(1, pk++, {3, 200, 0,0})); step(); check(move==3, "MOVE from the Synapse -> SPIN");

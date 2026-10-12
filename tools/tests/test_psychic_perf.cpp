@@ -12,7 +12,7 @@ namespace fs { File::operator bool() const { return g_f!=nullptr; } bool File::a
  size_t File::size(){ long p=ftell(g_f); fseek(g_f,0,SEEK_END); long n=ftell(g_f); fseek(g_f,p,SEEK_SET); return n; } void File::close(){ if(g_f){fclose(g_f); g_f=nullptr;} }
  size_t File::position(){ return ftell(g_f); }
  int File::readBytesUntil(char t,char* b,int n){ int i=0,c; while(i<n && (c=fgetc(g_f))!=EOF){ if(c==t) break; b[i++]=(char)c; } return i; } }
-LittleFSClass LittleFS; bool LittleFSClass::begin(bool){ return true; } bool LittleFSClass::exists(const char*){ return true; }
+LittleFSClass LittleFS; bool LittleFSClass::begin(bool, const char*, uint8_t, const char*){ return true; } bool LittleFSClass::exists(const char*){ return true; }
 fs::File LittleFSClass::open(const char*, const char*){ g_f=fopen(PACK,"rb"); return fs::File(); }
 const char* String::c_str() const { return ""; }
 bool Preferences::begin(const char*,bool){return true;} void Preferences::end(){} size_t Preferences::putString(const char*,const char*){return 0;} String Preferences::getString(const char*,const char*){return String();}

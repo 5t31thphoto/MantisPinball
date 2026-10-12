@@ -28,7 +28,8 @@ static volatile bool s_up = false;       // set only when the radio is fully rea
 static volatile bool s_busy = false;     // a bring-up/teardown task is running
 static uint16_t s_seq = 0;
 static uint8_t s_lastMove = 0xFF;
-static uint32_t s_t0 = 0, s_node = 0;
+static uint32_t s_t0 = 0, s_node = 0, s_lastHello = 0;
+static uint16_t s_lastBpm = 0;
 
 struct __attribute__((packed)) MnHeader {          // MANTISNOW.md, 28 bytes
     uint8_t magic, version, kind, flags;
@@ -92,6 +93,14 @@ static void radioTask(void* arg) {
 }
 
 void danceNetService(bool partyOn) {
+    // Presence heartbeat: START once a second while partying. Before this the
+    // T-Display only ever heard a single START (sent the instant the radio came
+    // up) and then nothing until music produced beats - so with no song playing
+    // it never found the Synapse at all.
+    if (s_up && partyOn && !s_busy && millis() - s_lastHello >= 1000) {
+        s_lastHello = millis();
+        send(2, &s_lastBpm, 2);
+    }
     if (s_busy || partyOn == (bool)s_up) return;            // nothing to do, or already working on it
     s_busy = true;
     if (xTaskCreatePinnedToCore(radioTask, "dnet", 3072, partyOn ? (void*)1 : nullptr,
@@ -102,6 +111,7 @@ bool danceNetUp() { return s_up; }
 
 void danceNetBeat(uint16_t bpm, uint8_t beatInBar) {
     uint8_t pl[7]; uint32_t ms = millis() - s_t0;
+    s_lastBpm = bpm;
     memcpy(pl, &bpm, 2); pl[2] = beatInBar & 3; memcpy(pl + 3, &ms, 4);
     send(0, pl, 7);
 }

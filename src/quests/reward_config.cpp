@@ -49,7 +49,7 @@ bool rcLoad(){
     memset(g_item,0,sizeof(g_item));
     g_loaded=false;
 
-    if(!LittleFS.begin(false)) return false;
+    if(!LittleFS.begin(false, "/littlefs", 10, "content")) return false;
     fs::File f = LittleFS.open("/content/rewards.cfg","r");
     if(!f) return false;
 

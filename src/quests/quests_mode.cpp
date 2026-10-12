@@ -168,7 +168,7 @@ void questsSeedDefaultConfig() {
 // user later makes in the portal.
 static void qParsePost(const String& body);   // defined with the portal below
 static void questsImportFileIfPresent() {
-    if (!LittleFS.begin(false)) return;
+    if (!LittleFS.begin(false, "/littlefs", 10, "content")) return;
     if (!LittleFS.exists("/content/todos.txt")) return;
     fs::File f = LittleFS.open("/content/todos.txt", "r");
     if (!f) return;

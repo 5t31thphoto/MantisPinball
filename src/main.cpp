@@ -2116,6 +2116,7 @@ static void tickMenu() {
         menuIndex = (menuIndex + 1) % menuCount;
     }
     if (pressedR) {
+        g_entryLatch = true;     // the app must not see this press - see appInputGuardBegin()
         AppState target = menuItems[menuIndex].target;
         switch (target) {
             case STATE_PLAYING: resetGame();   break;
@@ -3225,6 +3226,63 @@ static void menuClockTickNonBlocking() {
     }
 }
 
+// ---------------- APP INPUT GUARD ----------------
+// Wrapped around the app dispatch ONLY. The exit double-click and the sleep
+// hold above still read the raw buttons; the raw values are restored after
+// the app's tick, so those detectors never see the mask.
+//
+//  * ENTRY LATCH (every app): the menu selects on PRESS, so an app starts with
+//    R still held. Until both buttons have been released once, the app sees
+//    neither - the selecting press can never leak into it.
+//  * CHORD GUARD (apps that never need both buttons and have no guard of their
+//    own): a both-buttons chord - the menu double-click - is hidden from the
+//    app, plus 350 ms after release to swallow the second click. Same rule as
+//    chord_guard.cpp. Pinball and the other both-button games are not listed,
+//    so both buttons always work there right up until you leave.
+static bool     g_entryLatch = false;
+static bool     g_cgPoison = false;
+static uint32_t g_cgReleasedAt = 0;
+static bool     g_rawL, g_rawR, g_rawLp, g_rawRp, g_appL, g_appR;
+
+static bool centralChordGuard(AppState s) {
+    switch (s) {
+    case STATE_WEATHER: case STATE_SPACE: case STATE_RABBIT: case STATE_MINER:
+    case STATE_APOD:    case STATE_MOON:  case STATE_DICE:   case STATE_CLICKER:
+    case STATE_SETUP:   case STATE_SHARE: case STATE_RUBIKS: case STATE_SCOUT:
+    case STATE_SURVIVAL: case STATE_FIRSTAID: case STATE_FRUIT: case STATE_PARTY:
+        return true;
+    default:
+        return false;      // pinball family, action games, and apps with their own guard
+    }
+}
+
+static void appInputGuardBegin() {
+    g_rawL = btnL; g_rawR = btnR; g_rawLp = btnL_prev; g_rawRp = btnR_prev;
+    bool vl = btnL, vr = btnR;
+    if (g_entryLatch) {
+        if (!g_rawL && !g_rawR) g_entryLatch = false;
+        else vl = vr = false;
+    }
+    if (centralChordGuard(appState)) {
+        const uint32_t now = millis();
+        if (g_rawL && g_rawR) g_cgPoison = true;
+        if (g_cgPoison) {
+            if (!g_rawL && !g_rawR) {
+                if (!g_cgReleasedAt) g_cgReleasedAt = now;
+                if (now - g_cgReleasedAt > 350) { g_cgPoison = false; g_cgReleasedAt = 0; }
+            } else g_cgReleasedAt = 0;
+            vl = vr = false;
+        }
+    } else { g_cgPoison = false; g_cgReleasedAt = 0; }
+    btnL_prev = g_appL; btnR_prev = g_appR;   // the app's edges come from what IT saw
+    btnL = vl; btnR = vr;
+    g_appL = vl; g_appR = vr;
+}
+
+static void appInputGuardEnd() {
+    btnL = g_rawL; btnR = g_rawR; btnL_prev = g_rawLp; btnR_prev = g_rawRp;
+}
+
 void loop() {
     const uint32_t now = millis();
     if (now - lastFrame < 16) return;
@@ -3322,6 +3380,7 @@ void loop() {
         enterMenu();
     }
 
+    appInputGuardBegin();
     switch (appState) {
         case STATE_INTRO:
             tickIntro();
@@ -3563,4 +3622,5 @@ void loop() {
             if (fbReady) drawGameOver();
             break;
     }
+    appInputGuardEnd();
 }

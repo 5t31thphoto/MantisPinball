@@ -51,7 +51,7 @@ static constexpr int BOARD_Y = 30;
 enum Color : uint8_t { C_NONE=0, C_TEAL=1, C_PURPLE=2, C_LIME=3 };
 enum Bomb  : uint8_t { B_NONE=0, B_RADIUS=1, B_CROSS=2, B_COLOR=3 };
 struct Cell { uint8_t color; uint8_t bomb; };   // color 0 = empty
-static Cell grid[ROWS][COLS];
+static Cell (*grid)[COLS] = nullptr;   // [ROWS][COLS] on the heap while the app is open
 
 static inline bool inb(int r,int c){ return r>=0 && r<ROWS && c>=0 && c<COLS; }
 static inline bool filled(int r,int c){ return inb(r,c) && grid[r][c].color!=C_NONE; }
@@ -181,7 +181,7 @@ static void lockPiece(){
 // mark[r][c]=1 means "this cell clears this settle". We compute all clears
 // (rows + color blobs), then let bombs chain, then remove + gravity, then
 // repeat while anything cleared - each pass is one cascade step (combo++).
-static uint8_t mark[ROWS][COLS];
+static uint8_t (*mark)[COLS] = nullptr;   // [ROWS][COLS] on the heap while the app is open
 
 static void markColorBlobs(){
     static uint8_t seen[ROWS][COLS];
@@ -271,7 +271,7 @@ static void grantAch(int a);
 static int resolveBoard(){
     int totalCleared=0; int step=0;
     while(true){
-        memset(mark,0,sizeof(mark));
+        memset(mark,0,(sizeof(uint8_t)*(ROWS)*(COLS)));
         markFullRows();
         markColorBlobs();
         bool bombFired = detonateBombs();
@@ -457,10 +457,32 @@ void mantisdropTick(){
     }
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_drop {
+    Cell grid[ROWS][COLS];
+    uint8_t mark[ROWS][COLS];
+};
+static AppHeap_drop* g_heap_drop = nullptr;
+static void heapUp_drop(){
+    if (!g_heap_drop) g_heap_drop = (AppHeap_drop*)malloc(sizeof(AppHeap_drop));
+    if (!g_heap_drop) return;
+    memset(g_heap_drop, 0, sizeof(AppHeap_drop));
+    grid = g_heap_drop->grid;
+    mark = g_heap_drop->mark;
+}
+static void heapDown_drop(){
+    free(g_heap_drop); g_heap_drop = nullptr;
+    grid = nullptr;
+    mark = nullptr;
+}
+
 void mantisdropEnter(){
+    heapUp_drop();                       // first: everything below may use the buffers
     fb.setRotation(0);
     mdLoad();
-    memset(grid,0,sizeof(grid));
+    memset(grid,0,(sizeof(Cell)*(ROWS)*(COLS)));
     score=0; lines=0; level=1; combo=0; gameOver=false;
     dropInterval=700; dropTimer=millis(); enterAt=millis(); frameNo=0;
     lDown=rDown=false; lLongDone=rLongDone=false; achQN=0; goT=0; bombsFromCombo=0;
@@ -473,4 +495,5 @@ void mantisdropShutdown(){
     if(score>md.hiScore){ md.hiScore=score; mdDirty=true; }
     if((uint16_t)lines>md.hiLines){ md.hiLines=(uint16_t)lines; mdDirty=true; }
     mdFlush();
+    heapDown_drop();                     // last: after saves and radio teardown
 }

@@ -45,14 +45,14 @@ struct FxIndex {
     char     title[MP_TITLE_LEN];
     uint8_t  performer;            // 1 = performer mode, 0 = solo
 };
-static FxIndex fxIdx[MP_MAX_FX];
+static FxIndex* fxIdx = nullptr;   // [MP_MAX_FX] on the heap while the app is open
 static int     fxCount = 0, soloCount = 0, perfCount = 0;
 
 // ── the loaded effect ────────────────────────────────────────────────────────
-static char  buf[MP_BUF];
+static char* buf = nullptr;   // [MP_BUF] on the heap while the app is open
 static int   bufLen = 0;
 struct Beat { char kind; uint16_t at; };   // at = offset into buf of the arg
-static Beat  beats[MP_MAX_BEATS];
+static Beat* beats = nullptr;   // [MP_MAX_BEATS] on the heap while the app is open
 static int   beatCount = 0, beatIdx = 0;
 
 // ── slots + tiny postfix evaluator (derivation effects only) ────────────────
@@ -102,10 +102,10 @@ static const char* MON[13]    = {"","JAN","FEB","MAR","APR","MAY","JUN","JUL","A
 static const int   NSYM = 10;
 static const char* SYM_NAME[NSYM] = {"STAR","MOON","HEART","EYE","SUN",
                                      "BOLT","DIAMOND","RING","CROSS","TRIANGLE"};
-static uint8_t chart[100];
+static uint8_t* chart = nullptr;   // [100] on the heap while the app is open
 static int     chartTarget = 0;
 static bool    chartOn = false;
-static char    qText[260];
+static char* qText = nullptr;   // [260] on the heap while the app is open
 static char    qWord[24];
 static bool    textOn = false;
 static char revBuf[48];
@@ -205,7 +205,7 @@ static void dealText(const char* a){
     int want = (int)(pr() % (uint32_t)count);
     for (int k = 0; k < want; k++) { t = strchr(t, '~'); t++; }
     const char* e = strchr(t, '~'); int len = e ? (int)(e - t) : (int)strlen(t);
-    if (len > (int)sizeof(qText) - 1) len = sizeof(qText) - 1;
+    if (len > (int)(sizeof(char)*(260)) - 1) len = (sizeof(char)*(260)) - 1;
     memcpy(qText, t, (size_t)len); qText[len] = 0;
     qWord[0] = 0;
     int w = 0; const char* p = qText;
@@ -249,9 +249,14 @@ static void drawSymbol(int id, int cx, int cy, int r, uint16_t c){
 }
 
 // ── pack loading ─────────────────────────────────────────────────────────────
+// The content partition is named "content" (partitions_16MB_pinball.csv).
+// LittleFS.begin(false) looks for "spiffs", fails, and Psychic indexed ZERO
+// tricks - every selection bounced back to the welcome screen. Mount it the
+// same way the working content apps do (no format-on-fail here).
+static bool psyMount(){ return LittleFS.begin(false, "/littlefs", 10, "content"); }
 static void buildIndex(){
     fxCount = soloCount = perfCount = 0;
-    if (!LittleFS.begin(false)) return;
+    if (!psyMount()) return;
     fs::File f = LittleFS.open("/content/psychic.mpk", "r");
     if (!f) return;
     uint32_t pos = 0;
@@ -287,7 +292,7 @@ static bool loadEffect(int i){
     beatCount = 0; bufLen = 0; beatIdx = 0;
     for (int k = 0; k < 4; k++) slots[k] = 0;
     if (i < 0 || i >= fxCount) return false;
-    if (!LittleFS.begin(false)) return false;
+    if (!psyMount()) return false;
     fs::File f = LittleFS.open("/content/psychic.mpk", "r");
     if (!f) return false;
     f.seek(fxIdx[i].off);
@@ -413,7 +418,38 @@ static void beginEffect(int i){
     startBeat();
 }
 
+// ---- house rule: an app holds its working buffers ONLY while it is open ----
+// Taken at the very start of Enter, freed at the very end of Shutdown, so a
+// closed app costs no RAM and every other app (TLS especially) gets it back.
+struct AppHeap_psychic {
+    FxIndex fxIdx[MP_MAX_FX];
+    char buf[MP_BUF];
+    Beat beats[MP_MAX_BEATS];
+    char qText[260];
+    uint8_t chart[100];
+};
+static AppHeap_psychic* g_heap_psychic = nullptr;
+static void heapUp_psychic(){
+    if (!g_heap_psychic) g_heap_psychic = (AppHeap_psychic*)malloc(sizeof(AppHeap_psychic));
+    if (!g_heap_psychic) return;
+    memset(g_heap_psychic, 0, sizeof(AppHeap_psychic));
+    fxIdx = g_heap_psychic->fxIdx;
+    buf = g_heap_psychic->buf;
+    beats = g_heap_psychic->beats;
+    qText = g_heap_psychic->qText;
+    chart = g_heap_psychic->chart;
+}
+static void heapDown_psychic(){
+    free(g_heap_psychic); g_heap_psychic = nullptr;
+    fxIdx = nullptr;
+    buf = nullptr;
+    beats = nullptr;
+    qText = nullptr;
+    chart = nullptr;
+}
+
 void mantisPsychicEnter(){
+    heapUp_psychic();                       // first: everything below may use the buffers
     fb.setRotation(0);
     chordGuardReset();
     buildIndex();
@@ -422,7 +458,8 @@ void mantisPsychicEnter(){
     frameNo = 0; enterAt = millis();
     rng = millis() | 1u;
 }
-void mantisPsychicShutdown(){ /* the mantis remembers nothing */ }
+void mantisPsychicShutdown(){ /* the mantis remembers nothing */     heapDown_psychic();                     // last: after saves and radio teardown
+}
 
 void mantisPsychicTick(){
     chordGuardTick();
