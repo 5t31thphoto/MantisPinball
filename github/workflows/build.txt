@@ -1,0 +1,183 @@
+# Mantis Pinball - Build & Pages
+#
+# Ships as github/workflows/ (no dot) so the zip unpacks cleanly. Rename the
+# folder to .github/workflows/ and commit to enable it - same as Synapse.
+#
+# Zip-drop: put a payload .zip in the repo root and push. This job unpacks it
+# over the repo, deletes the zip, commits that, then builds and deploys.
+name: Build & Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PIO_ENV: lilygo-t-display-s3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Unzip payload into repo, consume zip, commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mapfile -t ZIPS < <(find . -maxdepth 1 -type f -name '*.zip' | sort)
+          if [ ${#ZIPS[@]} -eq 0 ]; then
+            echo "No root zip - building tree as-is"
+          else
+            for z in "${ZIPS[@]}"; do
+              echo "EXTRACT $z"
+              TMP=$(mktemp -d)
+              unzip -o "$z" -d "$TMP"
+              NDIR=$(find "$TMP" -mindepth 1 -maxdepth 1 -type d | wc -l)
+              NFILE=$(find "$TMP" -mindepth 1 -maxdepth 1 -type f | wc -l)
+              TOP=$(find "$TMP" -mindepth 1 -maxdepth 1 -type d | head -1 || true)
+              if [ "$NDIR" -eq 1 ] && [ "$NFILE" -eq 0 ] && [ -n "$TOP" ]; then SRCDIR="$TOP"; else SRCDIR="$TMP"; fi
+              # The Actions token may not push workflow files, so a payload's
+              # workflow folders are left out (rename + commit those by hand).
+              for wf in github .github; do
+                if [ -d "$SRCDIR/$wf" ]; then echo "SKIP $wf/ (update workflows manually)"; rm -rf "$SRCDIR/$wf"; fi
+              done
+              # the payload's src/ replaces the repo's src/ entirely, so removed files don't linger
+              if [ -d "$SRCDIR/src" ]; then rm -rf src; fi
+              cp -a "$SRCDIR"/. .
+              rm -rf "$TMP"
+              rm -f "$z"
+            done
+            git add -A
+            if ! git diff --staged --quiet; then
+              git commit -m "ci: extract payload into repo (consume zip) [skip ci]"
+              git push origin HEAD:${{ github.ref_name }}
+            fi
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node (for the in-browser patcher tests)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            .pio/libdeps
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+
+      - name: Install PlatformIO
+        # Same PlatformIO the tkinter installer pins (matches espressif32@6.5.0)
+        run: pip install "platformio==6.1.15" esptool pillow
+
+      - name: Check config tables, apply config.json
+        run: |
+          python tools/headless_config.py --check
+          python tools/headless_config.py --write
+
+      - name: Verify (splash patcher, psychic effects)
+        run: |
+          set -euo pipefail
+          cd tools/tests
+          python mkimg.py build app.bin
+          node test_fwpatch.mjs
+          node test_identity.mjs
+          python mkimg.py verify app_patched.bin
+          rm -f app.bin app_patched.bin
+          cd ../..
+          if [ -f tools/validate_psychic.py ]; then python tools/validate_psychic.py; fi
+          # Mantis Psychic: regenerate the pack (proofs + firmware-limit checks),
+          # then play it through the REAL firmware code on the host
+          python tools/gen_psychic.py
+          PK="$PWD/data/content/psychic.mpk"
+          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_solo.cpp -o /tmp/psy_solo && /tmp/psy_solo
+          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_perf.cpp -o /tmp/psy_perf && /tmp/psy_perf
+          # Psychic driven by the REAL chord guard from the welcome screen
+          g++ -std=gnu++17 -O1 -w -DARDUINO=10814 -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_flow.cpp -o /tmp/psy_flow && /tmp/psy_flow
+          # entry latch + central chord guard, using main.cpp's own code
+          g++ -std=gnu++17 -O1 -w tools/tests/test_input_guard.cpp -o /tmp/guard && /tmp/guard
+          # house rule: every app sets up on Enter and frees on Shutdown - 5 cycles each under ASan
+          for t in tools/tests/lifecycle/t_*.cpp; do
+            g++ -std=gnu++17 -O1 -w -fsanitize=address,undefined -fno-sanitize-recover=all -DARDUINO=10814 -I tools/tests/stub -I src "$t" -o /tmp/lc && /tmp/lc || exit 1
+          done
+          # Mantis Chat: MantisNow protocol against frames built from MANTISNOW.md
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_mantischat.cpp -o /tmp/chat && /tmp/chat
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_danceparty.cpp -o /tmp/dance && /tmp/dance
+          # two separate Mantis Chat devices type and exchange messages over a simulated air link
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_chat_two_devices.cpp -o /tmp/chat2 && timeout 120 /tmp/chat2
+          # legacy MNW1 watches + whiteboard, checked against the Core2 MantisChat's own mc_proto.h
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src -I tools/tests tools/tests/test_mantischat_legacy_wb.cpp -o /tmp/lwb && /tmp/lwb
+
+      - name: Generate cube-solver lookup table from the shipped weights
+        run: |
+          g++ -O2 -I src/rubiks tools/mantis_cube/hosttests/gen_l1table.cpp -o /tmp/gen_l1table
+          /tmp/gen_l1table > src/rubiks/cube_l1table.h
+          ls -la src/rubiks/cube_l1table.h
+
+      - name: Build firmware
+        # The lookup table adds ~240 KB of flash. If the 3 MB app partition
+        # overflows, rebuild without it: the solver falls back to the exact
+        # non-table path, so a size problem can never break the build.
+        run: |
+          set -o pipefail
+          if ! pio run -e "$PIO_ENV" 2>&1 | tee /tmp/build.log; then
+            if grep -qiE "overflow|will not fit|region .* overflowed" /tmp/build.log; then
+              echo "::warning::Flash overflow - rebuilding without the cube lookup table"
+              PLATFORMIO_BUILD_FLAGS="-DMC_NO_L1TABLE" pio run -e "$PIO_ENV"
+            else
+              exit 1
+            fi
+          fi
+
+      - name: Memory report (same mem_report.json the tkinter installer reads)
+        run: |
+          python tools/memory_report.py || echo "::warning::memory_report.py failed"
+          cat tools/mem_report.json
+
+      - name: Build content filesystem
+        run: pio run -e "$PIO_ENV" -t buildfs
+
+      - name: Stage website
+        env:
+          BUILD_VERSION: "1.${{ github.run_number }}"
+        run: |
+          python tools/site_build.py
+          cp tools/mem_report.json website/firmware/mem_report.json 2>/dev/null || true
+          ls -la website/firmware/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
