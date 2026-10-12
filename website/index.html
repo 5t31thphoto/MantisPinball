@@ -82,11 +82,11 @@ h2.sec{font-family:Bungee,sans-serif;font-weight:400;font-size:1.7rem;margin:0 0
 .sub{color:var(--dim);margin:0 0 22px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px}
 
-/* storyboard */
-.story{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:820px){.story{grid-template-columns:repeat(2,1fr)}}
-.story figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.story figcaption{font-family:"Press Start 2P",monospace;font-size:.55rem;color:var(--lime);padding:9px 10px;letter-spacing:.05em}
+/* single celebratory gameplay illustration */
+.story{display:flex;justify-content:center}
+.story figure{width:min(100%,760px);margin:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.story img{width:100%;height:auto;display:block;object-fit:contain;background:#070a14}
+.story figcaption{font-family:"Press Start 2P",monospace;font-size:.62rem;color:var(--lime);padding:12px 14px;letter-spacing:.05em;text-align:center}
 
 /* install */
 .install{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
@@ -191,14 +191,12 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   <h2 class="sec">How it plays</h2>
   <p class="sub">Left button, right button. That's the whole controller.</p>
   <div class="story">
-    <figure><img src="assets/frame1.webp" alt="" loading="lazy"><figcaption>1. IDLE / READY</figcaption></figure>
-    <figure><img src="assets/frame2.webp" alt="" loading="lazy"><figcaption>2. FLIPPER PRESS</figcaption></figure>
-    <figure><img src="assets/frame3.webp" alt="" loading="lazy"><figcaption>3. BALL IN PLAY</figcaption></figure>
-    <figure><img src="assets/frame4.webp" alt="" loading="lazy"><figcaption>4. WATCH &amp; REACT</figcaption></figure>
-    <figure><img src="assets/frame5.webp" alt="" loading="lazy"><figcaption>5. FLIPPER PRESS</figcaption></figure>
-    <figure><img src="assets/frame6.webp" alt="" loading="lazy"><figcaption>6. BIG HIT!</figcaption></figure>
-    <figure><img src="assets/frame7.webp" alt="" loading="lazy"><figcaption>7. SCORE / CELEBRATE</figcaption></figure>
-    <figure><img src="assets/frame8.webp" alt="" loading="lazy"><figcaption>8. LOOP BACK</figcaption></figure>
+    <figure>
+      <img src="assets/mantis-celebrate.webp" width="372" height="256"
+           alt="A delighted green mantis celebrating a big score beside the Mantis Crypto Pinball cabinet"
+           loading="lazy">
+      <figcaption>BIG HIT. BIG MANTIS ENERGY.</figcaption>
+    </figure>
   </div>
 </section>
 
