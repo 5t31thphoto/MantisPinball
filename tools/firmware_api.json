@@ -1,0 +1,680 @@
+{
+  "schema": 1,
+  "generatedBy": "tools/gen_api.py",
+  "device": {
+    "board": "LilyGo T-Display-S3",
+    "mcu": "ESP32-S3",
+    "display": "170x320 ST7789",
+    "psram": false,
+    "flash": "16MB",
+    "ram_note": "~320KB; frame buffer sprite ~108KB; budget RAM carefully",
+    "buttons": {
+      "left": "GPIO0",
+      "right": "GPIO14"
+    },
+    "global_gestures": {
+      "hold_both_3s": "sleep (reserved, never override)",
+      "double_click_both": "menu (reserved, never override)",
+      "single_tap_L": "per-app (convention: scroll/advance)",
+      "single_tap_R": "per-app (convention: select/confirm)"
+    }
+  },
+  "apps": [
+    {
+      "id": "pinball",
+      "name": "PINBALL BLASTER",
+      "category": "Game",
+      "state": "A_PLAYING",
+      "lifecycle": {
+        "enter": null,
+        "tick": null,
+        "draw": null,
+        "shutdown": null
+      },
+      "inlineDispatch": true,
+      "scaffoldable": false
+    },
+    {
+      "id": "pocket",
+      "name": "CORNER POCKET",
+      "category": "Game",
+      "state": "A_POCKET",
+      "lifecycle": {
+        "enter": null,
+        "tick": null,
+        "draw": null,
+        "shutdown": null
+      },
+      "inlineDispatch": true,
+      "scaffoldable": false
+    },
+    {
+      "id": "slots",
+      "name": "JACKS OR BETTER",
+      "category": "Game",
+      "state": "A_SLOTS",
+      "lifecycle": {
+        "enter": null,
+        "tick": null,
+        "draw": null,
+        "shutdown": null
+      },
+      "inlineDispatch": true,
+      "scaffoldable": false
+    },
+    {
+      "id": "versus",
+      "name": "VERSUS PINBALL",
+      "category": "Game",
+      "state": "A_VERSUS",
+      "lifecycle": {
+        "enter": "versusEnter",
+        "tick": "versusTick",
+        "draw": "versusDraw",
+        "shutdown": "versusShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "weather",
+      "name": "WEATHER REPORT",
+      "category": "Live Data",
+      "state": "A_WEATHER",
+      "lifecycle": {
+        "enter": "weatherEnter",
+        "tick": "weatherTick",
+        "draw": "weatherDraw",
+        "shutdown": "weatherShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "space",
+      "name": "SPACE WEATHER",
+      "category": "Live Data",
+      "state": "A_SPACE",
+      "lifecycle": {
+        "enter": "spaceEnter",
+        "tick": "spaceTick",
+        "draw": "spaceDraw",
+        "shutdown": "spaceShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "flight",
+      "name": "FLIGHTS OVERHEAD",
+      "category": "Live Data",
+      "state": "A_FLIGHT",
+      "lifecycle": {
+        "enter": "flightEnter",
+        "tick": "flightTick",
+        "draw": "flightDraw",
+        "shutdown": "flightShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "miner",
+      "name": "BTC MINER",
+      "category": "Live Data",
+      "state": "A_MINER",
+      "lifecycle": {
+        "enter": null,
+        "tick": null,
+        "draw": null,
+        "shutdown": null
+      },
+      "inlineDispatch": true,
+      "scaffoldable": false
+    },
+    {
+      "id": "candles",
+      "name": "CRYPTO CANDLES",
+      "category": "Live Data",
+      "state": "A_CANDLES",
+      "lifecycle": {
+        "enter": "candlesEnter",
+        "tick": "candlesTick",
+        "draw": "candlesDraw",
+        "shutdown": "candlesShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "apod",
+      "name": "NASA APOD",
+      "category": "Live Data",
+      "state": "A_APOD",
+      "lifecycle": {
+        "enter": "apodEnter",
+        "tick": "apodTick",
+        "draw": "apodDraw",
+        "shutdown": "apodShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "rabbit",
+      "name": "RABBIT HOLE",
+      "category": "Creative",
+      "state": "A_RABBIT",
+      "lifecycle": {
+        "enter": "rabbitEnter",
+        "tick": "rabbitTick",
+        "draw": "rabbitDraw",
+        "shutdown": "rabbitShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "cyoa",
+      "name": "MANTIS TALE",
+      "category": "Creative",
+      "state": "A_CYOA",
+      "lifecycle": {
+        "enter": "cyoaEnter",
+        "tick": "cyoaTick",
+        "draw": "cyoaDraw",
+        "shutdown": "cyoaShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "firstaid",
+      "name": "FIRST AID",
+      "category": "Guide",
+      "state": "A_FIRSTAID",
+      "lifecycle": {
+        "enter": "firstaidEnter",
+        "tick": "firstaidTick",
+        "draw": "firstaidDraw",
+        "shutdown": "firstaidShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "survival",
+      "name": "SURVIVAL GUIDE",
+      "category": "Guide",
+      "state": "A_SURVIVAL",
+      "lifecycle": {
+        "enter": "survivalEnter",
+        "tick": "survivalTick",
+        "draw": "survivalDraw",
+        "shutdown": "survivalShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "scout",
+      "name": "SCOUT SKILLS",
+      "category": "Guide",
+      "state": "A_SCOUT",
+      "lifecycle": {
+        "enter": "scoutEnter",
+        "tick": "scoutTick",
+        "draw": "scoutDraw",
+        "shutdown": "scoutShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "guidebooks",
+      "name": "GUIDEBOOKS",
+      "category": "Guide",
+      "state": "A_GUIDEBOOKS",
+      "lifecycle": {
+        "enter": "guidebooksEnter",
+        "tick": "guidebooksTick",
+        "draw": "guidebooksDraw",
+        "shutdown": "guidebooksShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "quests",
+      "name": "QUESTS",
+      "category": "System",
+      "state": "A_QUESTS",
+      "lifecycle": {
+        "enter": "questsEnter",
+        "tick": "questsTick",
+        "draw": "questsDraw",
+        "shutdown": "questsShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "pet",
+      "name": "MANTIS PET",
+      "category": "System",
+      "state": "A_PET",
+      "lifecycle": {
+        "enter": "petEnter",
+        "tick": "petTick",
+        "draw": "petDraw",
+        "shutdown": "petShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "share",
+      "name": "PINBALL SHARING",
+      "category": "System",
+      "state": "A_SHARE",
+      "lifecycle": {
+        "enter": "shareEnter",
+        "tick": "shareTick",
+        "draw": "shareDraw",
+        "shutdown": "shareShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "moon",
+      "name": "MOON",
+      "category": "Live Data",
+      "state": "A_MOON",
+      "lifecycle": {
+        "enter": "moonEnter",
+        "tick": "moonTick",
+        "draw": "moonDraw",
+        "shutdown": "moonShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "neo",
+      "name": "ASTEROIDS",
+      "category": "Live Data",
+      "state": "A_NEO",
+      "lifecycle": {
+        "enter": "neoEnter",
+        "tick": "neoTick",
+        "draw": "neoDraw",
+        "shutdown": "neoShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "clicker",
+      "name": "CLICK COUNTER",
+      "category": "System",
+      "state": "A_CLICKER",
+      "lifecycle": {
+        "enter": "clickerEnter",
+        "tick": "clickerTick",
+        "draw": "clickerDraw",
+        "shutdown": "clickerShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "dice",
+      "name": "DICE",
+      "category": "Game",
+      "state": "A_DICE",
+      "lifecycle": {
+        "enter": "diceEnter",
+        "tick": "diceTick",
+        "draw": "diceDraw",
+        "shutdown": "diceShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "aquarium",
+      "name": "AQUARIUM",
+      "category": "Game",
+      "state": "A_AQUARIUM",
+      "lifecycle": {
+        "enter": "aquariumEnter",
+        "tick": "aquariumTick",
+        "draw": "aquariumDraw",
+        "shutdown": "aquariumShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "fruit",
+      "name": "FRUIT FRENZY",
+      "category": "Game",
+      "state": "A_FRUIT",
+      "lifecycle": {
+        "enter": "fruitEnter",
+        "tick": "fruitTick",
+        "draw": "fruitDraw",
+        "shutdown": "fruitShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "ham",
+      "name": "HAM RADIO",
+      "category": "Live Data",
+      "state": "A_HAM",
+      "lifecycle": {
+        "enter": "hamEnter",
+        "tick": "hamTick",
+        "draw": "hamDraw",
+        "shutdown": "hamShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "roadhunt",
+      "name": "ROAD HUNT",
+      "category": "Game",
+      "state": "A_ROADHUNT",
+      "lifecycle": {
+        "enter": "roadhuntEnter",
+        "tick": "roadhuntTick",
+        "draw": "roadhuntDraw",
+        "shutdown": "roadhuntShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "sightings",
+      "name": "SIGHTINGS",
+      "category": "Game",
+      "state": "A_SIGHTINGS",
+      "lifecycle": {
+        "enter": "sightingsEnter",
+        "tick": "sightingsTick",
+        "draw": "sightingsDraw",
+        "shutdown": "sightingsShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantiscannon",
+      "name": "MANTIS CANNON",
+      "category": "Game",
+      "state": "A_MANTISCANNON",
+      "lifecycle": {
+        "enter": "mantiscannonEnter",
+        "tick": "mantiscannonTick",
+        "draw": "mantiscannonDraw",
+        "shutdown": "mantiscannonShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantisskate",
+      "name": "MANTIS SKATE",
+      "category": "Game",
+      "state": "A_MANTISSKATE",
+      "lifecycle": {
+        "enter": "mantisskateEnter",
+        "tick": "mantisskateTick",
+        "draw": "mantisskateDraw",
+        "shutdown": "mantisskateShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantisfish",
+      "name": "MANTIS FISHING",
+      "category": "Game",
+      "state": "A_MANTISFISH",
+      "lifecycle": {
+        "enter": "mantisfishEnter",
+        "tick": "mantisfishTick",
+        "draw": "mantisfishDraw",
+        "shutdown": "mantisfishShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "dunerider",
+      "name": "DUNE RIDER",
+      "category": "Game",
+      "state": "A_DUNERIDER",
+      "lifecycle": {
+        "enter": "duneriderEnter",
+        "tick": "duneriderTick",
+        "draw": "duneriderDraw",
+        "shutdown": "duneriderShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantisputt",
+      "name": "MANTIS PUTT",
+      "category": "Game",
+      "state": "A_MANTISPUTT",
+      "lifecycle": {
+        "enter": "mantisputtEnter",
+        "tick": "mantisputtTick",
+        "draw": "mantisputtDraw",
+        "shutdown": "mantisputtShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantisdrop",
+      "name": "MANTIS DROP",
+      "category": "Game",
+      "state": "A_MANTISDROP",
+      "lifecycle": {
+        "enter": "mantisdropEnter",
+        "tick": "mantisdropTick",
+        "draw": "mantisdropDraw",
+        "shutdown": "mantisdropShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantisvaders",
+      "name": "MANTIS VADERS",
+      "category": "Game",
+      "state": "A_MANTISVADERS",
+      "lifecycle": {
+        "enter": "mantisvadersEnter",
+        "tick": "mantisvadersTick",
+        "draw": "mantisvadersDraw",
+        "shutdown": "mantisvadersShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantispsychic",
+      "name": "MANTIS PSYCHIC",
+      "category": "Game",
+      "state": "A_MANTISPSYCHIC",
+      "lifecycle": {
+        "enter": "mantisPsychicEnter",
+        "tick": "mantisPsychicTick",
+        "draw": "mantisPsychicDraw",
+        "shutdown": "mantisPsychicShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "rubiks",
+      "name": "CUBE SOLVER",
+      "category": "Game",
+      "state": "A_RUBIKS",
+      "lifecycle": {
+        "enter": "rubiksEnter",
+        "tick": "rubiksTick",
+        "draw": "rubiksDraw",
+        "shutdown": "rubiksShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "fireworks",
+      "name": "FIREWORKS",
+      "category": "game",
+      "state": "A_FIREWORKS",
+      "lifecycle": {
+        "enter": "fireworksEnter",
+        "tick": "fireworksTick",
+        "draw": "fireworksDraw",
+        "shutdown": "fireworksShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "mantischat",
+      "name": "MANTIS CHAT",
+      "category": "system",
+      "state": "A_MANTISCHAT",
+      "lifecycle": {
+        "enter": "mantischatEnter",
+        "tick": "mantischatTick",
+        "draw": "mantischatDraw",
+        "shutdown": "mantischatShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    },
+    {
+      "id": "danceparty",
+      "name": "DANCE PARTY",
+      "category": "game",
+      "state": "A_DANCEPARTY",
+      "lifecycle": {
+        "enter": "dancepartyEnter",
+        "tick": "dancepartyTick",
+        "draw": "dancepartyDraw",
+        "shutdown": "dancepartyShutdown"
+      },
+      "inlineDispatch": false,
+      "scaffoldable": true
+    }
+  ],
+  "api": {
+    "screen": [
+      {
+        "sig": "fb.fillSprite(color)",
+        "doc": "Clear the frame buffer to a color."
+      },
+      {
+        "sig": "fb.pushSprite(0,0)",
+        "doc": "Blit the frame buffer to the display."
+      },
+      {
+        "sig": "fb.drawString(text,x,y,font)",
+        "doc": "Draw text at x,y."
+      },
+      {
+        "sig": "fb.fillRoundRect(x,y,w,h,r,color)",
+        "doc": "Filled rounded rectangle."
+      },
+      {
+        "sig": "fb.setTextColor(color)",
+        "doc": "Set text color (theme_colors.h palette)."
+      },
+      {
+        "sig": "fb.setTextDatum(datum)",
+        "doc": "Text anchor (ML_DATUM, MC_DATUM, TR_DATUM...)."
+      }
+    ],
+    "storage": [
+      {
+        "sig": "Preferences p; p.begin(ns,ro)",
+        "doc": "Open an NVS namespace."
+      },
+      {
+        "sig": "p.putBytes(key,&v,sizeof v)",
+        "doc": "Persist a POD blob."
+      },
+      {
+        "sig": "p.getBytes(key,&v,sizeof v)",
+        "doc": "Load a POD blob."
+      },
+      {
+        "sig": "LittleFS.open(path,\"r\")",
+        "doc": "Open a content pack from flash."
+      }
+    ],
+    "network": [
+      {
+        "sig": "WiFiClientSecure c; c.connect(host,443)",
+        "doc": "TLS fetch (one at a time; ~40KB heap)."
+      },
+      {
+        "sig": "WiFi.softAP(name)",
+        "doc": "Start a captive-portal AP (see weather/share)."
+      },
+      {
+        "sig": "esp_now_send(peer,buf,len)",
+        "doc": "ESP-NOW peer message (see versus/pet)."
+      }
+    ],
+    "profile": [
+      {
+        "sig": "qpAddXp(n)",
+        "doc": "Grant player XP (quest profile)."
+      },
+      {
+        "sig": "qpAddItem(id,n) / qpUseItem(id)",
+        "doc": "Shared inventory."
+      },
+      {
+        "sig": "qpGrantPetXp(n)",
+        "doc": "Deposit pet XP (consumed by Pet Mode)."
+      },
+      {
+        "sig": "qpGrantPerk(PERK_*)",
+        "doc": "Queue a pinball perk for next game."
+      }
+    ],
+    "lifecycle": [
+      {
+        "sig": "void xEnter()",
+        "doc": "Called once when the app opens."
+      },
+      {
+        "sig": "void xTick()",
+        "doc": "Called every frame: read btnL/btnR edges, update state."
+      },
+      {
+        "sig": "void xDraw()",
+        "doc": "Called every frame: render to fb, then fb.pushSprite(0,0)."
+      },
+      {
+        "sig": "void xShutdown()",
+        "doc": "Called once when leaving; free resources, save state."
+      }
+    ]
+  }
+}

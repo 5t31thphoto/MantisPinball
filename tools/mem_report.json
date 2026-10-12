@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "constants": {
+    "sram_total": 327680,
+    "frame_buffer_sprite": 108800,
+    "shared_jpeg_buffer": 61440,
+    "tls_handshake_transient": 40000,
+    "psram": false
+  },
+  "static": {},
+  "device": {},
+  "notes": [
+    "Build skipped (--no-build); using constants/device only.",
+    "freeHeap is a rough fallback estimate."
+  ],
+  "budget": {
+    "estFreeHeapBytes": 38880,
+    "largestFreeBlockBytes": null,
+    "safeAppAllocIfNetworking": 0,
+    "safeAppAllocNoNetworking": 14880,
+    "guidance": "Stay well under safeAppAllocIfNetworking if your app opens a TLS connection (weather/space/etc). Big buffers should be malloc'd on Enter and freed on Shutdown, never left in static BSS. The image decode buffer (g_jpegBuf, 60KB) is shared and on-demand."
+  }
+}

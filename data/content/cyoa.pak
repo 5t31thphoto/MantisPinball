@@ -1,0 +1,235 @@
+@PAGE start
+THE HOLLOW ROAD
+
+Your truck dies twelve miles up a logging road, deep in country that doesn't get many visitors. Dusk is coming, the temperature is falling, and no one knows exactly where you are.
+
+What you carry now is what you earned out in the world. It may be the difference between a cold night and a bad end.
+@GO L|Make camp before dark|camp
+@GO R|Push toward a far light|pushon
+
+@PAGE camp
+You clear a spot to build a debris shelter against the cold. The wind is already cutting through your jacket, and dry tinder is scarce in the damp.
+@USE L|torch|Light a proper fire|warmcamp|coldcamp
+@GO R|Build the shelter cold|coldcamp
+
+@PAGE warmcamp
+Your torch gets a real fire roaring. Warmth spreads through the little shelter and your mind settles. By firelight you notice old boards in the trees nearby - the corner of a structure.
+@XP 20
+@GO L|Rest the night, explore at dawn|dawncabin
+@GO R|Investigate the structure now|cabin
+
+@PAGE coldcamp
+You build the shelter without fire, shivering through the work. It's a long, miserable night, but you survive it. At first light, stiff and aching, you spot old boards in the trees - a structure.
+@HP -2
+@GO L|Approach the structure|cabin
+@GO R|Approach the structure|cabin
+
+@PAGE dawncabin
+You wake rested and warm, the storm passed. You bank the fire and walk to the structure in clean morning light, sharp and ready.
+@XP 10
+@GO L|Approach the structure|cabin
+@GO R|Approach the structure|cabin
+
+@PAGE pushon
+You walk toward a faint light through the trees. The ground drops away suddenly - a washed-out gully, ten feet down, slick with mud. Cross it now or lose the light.
+@USE L|rope|Rig a rope and descend|gullywin|gullyrisk
+@GO R|Climb down without a line|gullyrisk
+
+@PAGE gullyrisk
+You pick your way down the slick mud without protection.
+@ROLL L|Test every handhold|7|agility|gullywin|gullyfail
+@ROLL R|Move fast and commit|8|courage|gullywin|gullyfail
+
+@PAGE gullyfail
+The mud takes your feet. You slide hard into the rocks below and pain flares in your ankle. You drag yourself up the far bank, hurt.
+@HP -3
+@GO L|Bind it and go on|bindankle
+@GO R|Limp onward to the light|cabin
+
+@PAGE bindankle
+A wound left untended only gets worse out here.
+@USE L|medkit|Splint and wrap it properly|bound|boundrough
+@GO R|Lash it with a stick and cord|boundrough
+
+@PAGE bound
+You splint the ankle clean and dress it right. The throbbing fades to a dull ache you can walk on. Good gear, well used.
+@XP 20
+@GO L|Continue to the light|cabin
+@GO R|Continue to the light|cabin
+
+@PAGE boundrough
+You lash a stick to the ankle with cord. It holds, barely, and every step is a negotiation with the pain.
+@HP -1
+@GO L|Continue to the light|cabin
+@GO R|Continue to the light|cabin
+
+@PAGE gullywin
+You reach the far bank clean and dry. In the brush something glints - a coil of abandoned climbing rope. You take it; out here, gear is life.
+@XP 20
+@ITEM rope
+@GO L|Continue to the light|cabin
+@GO R|Continue to the light|cabin
+
+@PAGE cabin
+The light came from a research cabin, long abandoned. Solar panels sag on the roof, wires chewed by weather. The door is barred from inside; a window is broken but high.
+@GO L|Boost up to the window|window
+@GO R|Force the door|forcedoor
+
+@PAGE forcedoor
+The door is swollen oak, barred within. Brute force or a clever hand.
+@USE L|multitool|Pry the hinge pins|insidewin|doorfail
+@ROLL R|Shoulder it down|9|courage|insidewin|doorfail
+
+@PAGE doorfail
+The door holds and you've made a racket. Inside, something heavy shifts and topples. You'll climb after all.
+@GO L|Climb to the window|window
+@GO R|Climb to the window|window
+
+@PAGE window
+You stack rotten crates to the window. Inside is black - too dark to see the floor below.
+@USE L|rope|Lower yourself in on a line|insidewin|blinddrop
+@GO R|Light the room first|windowlight
+
+@PAGE windowlight
+You want to see before you commit to the drop.
+@USE L|torch|Light the room, then drop|insidewin|blinddrop
+@GO R|Just drop in carefully|blinddrop
+
+@PAGE blinddrop
+You drop into blackness and land badly on broken equipment. Glass and metal bite into you.
+@HP -2
+@GO L|Feel your way forward|inside
+@GO R|Feel your way forward|inside
+
+@PAGE insidewin
+You enter clean and quiet, eyes adjusting. The cabin is a relic of a forgotten field study: benches, dead instruments, a workbench heavy with salvage.
+@XP 25
+@GO L|Search the workbench|workbench
+@GO R|Check the back room|backroom
+
+@PAGE inside
+Battered but inside, you find a relic of a forgotten field study: benches, dead instruments, a workbench with tools you can salvage.
+@GO L|Search the workbench|workbench
+@GO R|Check the back room|backroom
+
+@PAGE workbench
+Among the junk: a sealed field multitool, far better than anything you carried, and an intact first-aid tin.
+@XP 20
+@ITEM multitool
+@ITEM medkit
+@GO L|Rest and patch up|restpatch
+@GO R|Go to the back room|backroom
+
+@PAGE restpatch
+You take a moment to use what you found and catch your breath.
+@USE L|medkit|Treat your wounds and rest|healed|backroom
+@GO R|No time - the back room|backroom
+
+@PAGE healed
+You clean and dress every cut, eat, and let warmth return to your hands. You feel human again, ready for whatever the cabin holds.
+@HP 4
+@XP 10
+@GO L|Go to the back room|backroom
+@GO R|Go to the back room|backroom
+
+@PAGE backroom
+The back room holds a radio transmitter, miraculously intact, wired to a failing solar array. Repair the power and you can call for help. But the wiring is a maze of corroded connections - and a steel parts cabinet is locked beside it.
+@GO L|Open the locked cabinet|cabinet
+@GO R|Attack the wiring directly|wiring
+
+@PAGE cabinet
+The cabinet surely holds the fuses and spare line you'd need to do this right.
+@USE L|multitool|Open the cabinet|haveparts|nocabinet
+@GO R|Skip it, work with what you have|wiring
+
+@PAGE nocabinet
+The cabinet won't yield and you've no key. You'll have to coax the dead array back to life with bare hands and luck.
+@GO L|Attack the wiring|wiring
+@GO R|Attack the wiring|wiring
+
+@PAGE haveparts
+Inside: fresh fuses, a coil of copper line, a multimeter. With real parts, the repair goes from a prayer to a plan.
+@XP 25
+@GO L|Rewire the array|wiringgood
+@GO R|Rewire the array|wiringgood
+
+@PAGE wiring
+You trace corroded lines by feel, splicing what you can.
+@USE L|luckcharm|Trust your luck on the last splice|radiowin|wiringtry
+@ROLL R|Trace the fault methodically|9|wits|radiowin|radiofail
+
+@PAGE wiringtry
+You make the last splice on instinct alone.
+@ROLL L|Hold your breath and connect|8|wits|radiowin|radiofail
+@ROLL R|Hold your breath and connect|8|wits|radiowin|radiofail
+
+@PAGE wiringgood
+With proper parts the repair is methodical and sure. Every connection seats clean.
+@ROLL L|Power it up|5|wits|radiowin|radiofail
+@ROLL R|Power it up|5|wits|radiowin|radiofail
+
+@PAGE radiofail
+Sparks. A capacitor pops and the system stays dead, and now you've spent your best lead. A burn stings your hand in the cold dark.
+@XP 10
+@USE L|medkit|Treat the burn, wait for dawn|signalfire|signalhurt
+@GO R|Tough it out till first light|signalhurt
+
+@PAGE radiowin
+The connections seat and the transmitter HUMS to life. You key the mic and raise a ranger station forty miles out. Help is coming by morning. You sleep by the glow of working electronics, prouder than any paycheck could make you.
+@XP 60
+@DIE 8 wise
+@GO L|How the night ends|rescueradio
+@GO R|How the night ends|rescueradio
+
+@PAGE signalhurt
+You nurse the burn through a long cold night on willpower alone. By dawn you're stiff and slow, but still standing, still thinking.
+@HP -2
+@GO L|Build a signal fire|signalfire
+@GO R|Try one more thing|lastditch
+
+@PAGE signalfire
+At first light you build a three-fire distress signal and flash a salvaged mirror at a passing spotter plane. Hours later a ranger truck grinds up the road. You made it out on grit and old skill.
+@XP 45
+@DIE 6 swift
+@GO L|Ride home|rescuesignal
+@GO R|Ride home|rescuesignal
+
+@PAGE lastditch
+One option left: hike out on foot at dawn and try to reach the highway before the next storm closes the road. It's twelve hard miles on whatever's left in you.
+@USE L|ration|Eat, then hike out|hikeout|hikeweak
+@GO R|Hike out on empty|hikeweak
+
+@PAGE hikeout
+Fed and focused, you set a steady pace down the mountain. By afternoon you flag down a logging crew at the highway. You walked out under your own power, on your own terms.
+@XP 50
+@DIE 8 swift
+@GO L|The road home|rescuewalk
+@GO R|The road home|rescuewalk
+
+@PAGE hikeweak
+You hike out on an empty stomach, legs shaking by mile six. You make the highway by dusk, hollow and spent, and collapse at the shoulder where a trucker finds you. You made it - barely.
+@HP -2
+@XP 30
+@GO L|The road home|rescuewalk
+@GO R|The road home|rescuewalk
+
+@PAGE rescueradio
+ENDING: THE OPERATOR
+
+A helicopter lifts you off the ridge at dawn, the working transmitter still warm in the cabin below. You didn't just survive the Hollow Road - you reached across it and pulled the world to you. Some people are made for the wild places.
+@XP 40
+@END
+
+@PAGE rescuesignal
+ENDING: THE OLD WAYS
+
+The ranger truck carries you down a road gone gold with morning. No technology saved you - only fire, mirror, and the patience your grandfather drilled into you. You came down the mountain the way people always have: on knowledge older than the road itself.
+@XP 35
+@END
+
+@PAGE rescuewalk
+ENDING: ON YOUR OWN TWO FEET
+
+You refused to wait for rescue and walked out instead. Battered, lighter, changed, you reach the highway under your own power. The mountain didn't beat you, and you didn't need saving. You needed only to keep moving.
+@XP 35
+@END

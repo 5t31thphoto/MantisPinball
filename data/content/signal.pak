@@ -1,0 +1,180 @@
+@PAGE start
+SIGNAL FROM THE RIDGE
+
+A storm has stranded you at a fire-lookout tower. Through the static a distress call breaks: a hiker, injured, somewhere below the treeline. Light is failing and the temperature is dropping fast.
+
+What you carry is what you earned. Out here it decides who walks home.
+@GO L|Triangulate the signal first|triangulate
+@GO R|Start down the trail now|descend
+
+@PAGE triangulate
+You swing the antenna, reading signal strength like a seasoned operator. The bearing sharpens: south slope, near the old burn.
+@XP 15
+@GO L|Radio a plan to the valley|relay
+@GO R|Descend toward the burn|burn
+
+@PAGE relay
+You key the mic and raise the valley repeater. A calm dispatcher copies your coordinates.
+@XP 10
+@DIE 8 wise
+@GO L|Ask them to talk you down|guided
+@GO R|Descend toward the burn|burn
+
+@PAGE guided
+The dispatcher knows this ridge. She names landmarks before you reach them, walking you toward the burn through the dark.
+@XP 15
+@GO L|Reach the burn|burn
+@GO R|Reach the burn|burn
+
+@PAGE descend
+You hurry down without a fix. The trail forks and the light dies. You guess.
+@USE L|torch|Light the trail and read the ground|burn|lost
+@ROLL R|Trust your read of the land|7|wits|burn|lost
+
+@PAGE lost
+You pick wrong and waste an hour in the wrong drainage. Cold and cursing, you double back.
+@HP -2
+@GO L|Re-read the signal|triangulate
+@GO R|Push on to the burn|burn
+
+@PAGE burn
+The burn is a graveyard of black snags. You hear a weak voice below a slope of loose scree. Night is here and the wind is rising.
+@GO L|Descend the scree to reach them|screecheck
+@GO R|Call out and find a safer way|saferway
+
+@PAGE saferway
+You skirt the scree looking for a gentler line down. It costs time, but you find a game trail switchbacking to the voice.
+@GO L|Follow the game trail down|reach
+@GO R|Follow the game trail down|reach
+
+@PAGE screecheck
+The scree is a forty-foot slide of loose rock in the dark. A rope makes it survivable.
+@USE L|rope|Anchor a line and descend|rope|fall
+@USE R|rope|Belay yourself down|rope|fall
+
+@PAGE fall
+You go without protection. The slope shifts and you ride a clatter of rock to the bottom, reaching the hiker bruised and shaken.
+@HP -3
+@GO L|Assess the injury|treat
+@GO R|Assess the injury|treat
+
+@PAGE rope
+You anchor to a snag and descend clean and controlled. Your knots hold. You reach the hiker steady and unhurt.
+@XP 20
+@GO L|Assess the injury|treat
+@GO R|Assess the injury|treat
+
+@PAGE reach
+You arrive at the hiker without a scratch, the long way proven wise. The voice is faint but alive.
+@XP 15
+@GO L|Assess the injury|treat
+@GO R|Assess the injury|treat
+
+@PAGE treat
+The ankle is wrecked and the hiker is sliding into shock from the cold. This needs real care, not a field wrap.
+@USE L|medkit|Open the kit and work|splinted|rough
+@ROLL R|Improvise with what you have|6|wits|splinted|rough
+
+@PAGE rough
+Your wrap is clumsy and the hiker cries out, but it holds enough to move. The cold is still hunting you both.
+@HP -1
+@GO L|Get them warm and fed|feed
+@GO R|Start the climb out|climbout
+
+@PAGE splinted
+You splint the ankle clean and get heat packs going. The hiker breathes easier. Skill and the right gear earn trust.
+@XP 20
+@DIE 6 keen
+@GO L|Get them warm and fed|feed
+@GO R|Start the climb out|climbout
+
+@PAGE feed
+The hiker is shaking with cold and hunger. Food now could be the difference before the climb.
+@USE L|ration|Share your rations|fed|nofood
+@USE R|ration|Give them your food|fed|nofood
+
+@PAGE fed
+You split your rations. Color returns to the hiker's face and the shivering eases. Small kindness, big difference.
+@XP 15
+@GO L|Start the climb out|climbout
+@GO R|Start the climb out|climbout
+
+@PAGE nofood
+You have nothing but encouragement to give. It will have to do. You get them moving before the cold wins.
+@HP -1
+@GO L|Start the climb out|climbout
+@GO R|Start the climb out|climbout
+
+@PAGE climbout
+Full dark, wind howling. Three ways off this ridge: haul up the steep line, wait for the team you radioed, or walk the long gentle route out.
+@GO L|Haul up the steep line|haulcheck
+@GO R|Weigh the slower ways|waitfork
+
+@PAGE haulcheck
+The steep line is fastest but carrying a hurt passenger up it needs a rope.
+@USE L|rope|Rig a haul system|haulend|hauldanger
+@GO R|Free-carry them up|hauldanger
+
+@PAGE hauldanger
+Without a line you free-carry the hiker up the pitch. It's brutal; you slip twice but reach the top, lungs tearing.
+@HP -3
+@GO L|Crest the ridge|haulend
+@GO R|Crest the ridge|haulend
+
+@PAGE waitfork
+You weigh the slower, safer options against the deepening cold.
+@GO L|Wait for the rescue team|waitcheck
+@GO R|Walk the long gentle route|lantern
+
+@PAGE waitcheck
+Waiting means hours in the cold. Keeping the hiker alive that long takes warmth and a clear head.
+@USE L|luckcharm|Trust the night will hold|waitend|waitgrim
+@GO R|Hunker down and endure|waitgrim
+
+@PAGE waitgrim
+You burn everything you can find and press close for warmth. It's the longest night of your life, but headlamps finally climb the trail near dawn.
+@HP -2
+@GO L|Hand off the hiker|waitend
+@GO R|Hand off the hiker|waitend
+
+@PAGE lantern
+The long route is gentle but pitch dark, and a wrong step off the edge ends everything.
+@USE L|torch|Light the way out|lightend|stumble
+@USE R|torch|Lead by torchlight|lightend|stumble
+
+@PAGE stumble
+With no light you feel down the dark trail, slow and stumbling, testing every step at the drop-offs. It takes half the night.
+@HP -1
+@GO L|Walk into the dawn|stumbleend
+@GO R|Walk into the dawn|stumbleend
+
+@PAGE haulend
+ENDING: THE HARD WAY
+
+You crest the ridge with the hiker safe and collapse in the wet grass, lungs burning, the lights of the trailhead below. No one will ever know what that climb cost you. You know. That's enough.
+@XP 30
+@END
+
+@PAGE waitend
+ENDING: THE LONG NIGHT
+
+You hand the hiker to fresh hands as the sun breaks over the ridge. You didn't carry them out - you simply refused to let the cold take them, hour by hour, until help arrived. The smartest rescue brings everyone home.
+@XP 30
+@ITEM luckcharm
+@END
+
+@PAGE lightend
+ENDING: STEADY LIGHT
+
+Your torch throws a warm cone down the gentle trail. You walk the hiker out at an easy pace, the rescue team's headlamps rising to meet you halfway. Everyone goes home whole, and it looks almost easy. It wasn't.
+@XP 30
+@DIE 8 keen
+@END
+
+@PAGE stumbleend
+ENDING: BY FEEL ALONE
+
+You bring the hiker out as dawn greys the ridge, having walked a knife-edge trail blind and won. Exhausted past speech, you ride down the mountain knowing exactly what you're capable of in the dark.
+@XP 25
+@DIE 6 brave
+@END

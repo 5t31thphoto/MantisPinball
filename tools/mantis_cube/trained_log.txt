@@ -1,0 +1,52 @@
+[data] building tablebase labels ...
+    1.0m FLT  step    1007 samples   1.03M  lr 2.00e-03  loss 2.296 acc 0.309 | held-out 0.264 (depth>=12: 0.075)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 60.002556562423706, 'samples': 1031168, 'steps': 1007}
+[data] building tablebase labels ...
+    1.1m FLT  step    1008 samples   1.03M  lr 1.99e-03  loss 2.420 acc 0.256 | held-out 0.266 (depth>=12: 0.075)
+    2.1m FLT  step    2059 samples   2.11M  lr 1.98e-03  loss 2.391 acc 0.274 | held-out 0.285 (depth>=12: 0.084)
+    3.1m FLT  step    3184 samples   3.26M  lr 1.96e-03  loss 2.361 acc 0.284 | held-out 0.295 (depth>=12: 0.082)
+    4.1m FLT  step    4307 samples   4.41M  lr 1.92e-03  loss 2.194 acc 0.346 | held-out 0.301 (depth>=12: 0.086)
+    5.2m FLT  step    5360 samples   5.49M  lr 1.88e-03  loss 2.285 acc 0.313 | held-out 0.302 (depth>=12: 0.084)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 309.1064155101776, 'samples': 5488640, 'steps': 5360}
+[data] building tablebase labels ...
+    5.2m FLT  step    5361 samples   5.49M  lr 1.75e-03  loss 2.337 acc 0.300 | held-out 0.302 (depth>=12: 0.084)
+    6.2m FLT  step    6513 samples   6.67M  lr 1.64e-03  loss 2.340 acc 0.307 | held-out 0.307 (depth>=12: 0.093)
+    7.2m FLT  step    7651 samples   7.83M  lr 1.53e-03  loss 2.176 acc 0.354 | held-out 0.312 (depth>=12: 0.092)
+    8.2m FLT  step    8757 samples   8.97M  lr 1.41e-03  loss 2.154 acc 0.368 | held-out 0.314 (depth>=12: 0.093)
+    9.3m FLT  step    9841 samples  10.08M  lr 1.28e-03  loss 2.248 acc 0.336 | held-out 0.312 (depth>=12: 0.086)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 555.2683126926422, 'samples': 10077184, 'steps': 9841}
+[data] building tablebase labels ...
+    9.3m FLT  step    9842 samples  10.08M  lr 1.27e-03  loss 2.268 acc 0.332 | held-out 0.314 (depth>=12: 0.088)
+   10.3m FLT  step   10985 samples  11.25M  lr 1.13e-03  loss 2.189 acc 0.352 | held-out 0.321 (depth>=12: 0.096)
+   11.3m FLT  step   12074 samples  12.36M  lr 9.98e-04  loss 2.263 acc 0.328 | held-out 0.313 (depth>=12: 0.087)
+   12.3m FLT  step   13170 samples  13.49M  lr 8.57e-04  loss 2.205 acc 0.330 | held-out 0.321 (depth>=12: 0.093)
+   13.4m FLT  step   14322 samples  14.67M  lr 7.21e-04  loss 2.211 acc 0.351 | held-out 0.323 (depth>=12: 0.092)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 802.5760555267334, 'samples': 14665728, 'steps': 14322}
+[data] building tablebase labels ...
+   13.4m FLT  step   14323 samples  14.67M  lr 7.16e-04  loss 2.235 acc 0.338 | held-out 0.324 (depth>=12: 0.092)
+   14.4m FLT  step   15394 samples  15.76M  lr 5.91e-04  loss 2.278 acc 0.318 | held-out 0.323 (depth>=12: 0.088)
+   15.5m FLT  step   16499 samples  16.89M  lr 4.72e-04  loss 2.201 acc 0.332 | held-out 0.325 (depth>=12: 0.090)
+   16.5m FLT  step   17651 samples  18.07M  lr 3.63e-04  loss 2.175 acc 0.347 | held-out 0.323 (depth>=12: 0.093)
+   17.5m FLT  step   18749 samples  19.20M  lr 2.76e-04  loss 2.176 acc 0.348 | held-out 0.322 (depth>=12: 0.087)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 1052.3820893764496, 'samples': 19198976, 'steps': 18749}
+[data] building tablebase labels ...
+   17.6m FLT  step   18750 samples  19.20M  lr 2.72e-04  loss 2.203 acc 0.350 | held-out 0.322 (depth>=12: 0.087)
+   18.6m FLT  step   19902 samples  20.38M  lr 2.02e-04  loss 2.218 acc 0.335 | held-out 0.327 (depth>=12: 0.094)
+   19.6m FLT  step   21054 samples  21.56M  lr 1.49e-04  loss 2.225 acc 0.332 | held-out 0.328 (depth>=12: 0.093)
+   20.6m FLT  step   22206 samples  22.74M  lr 1.14e-04  loss 2.180 acc 0.354 | held-out 0.329 (depth>=12: 0.096)
+   21.7m FLT  step   23358 samples  23.92M  lr 1.00e-04  loss 2.241 acc 0.340 | held-out 0.328 (depth>=12: 0.095)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 1299.570017337799, 'samples': 23918592, 'steps': 23358}
+[data] building tablebase labels ...
+   21.7m FLT  step   23359 samples  23.92M  lr 1.00e-04  loss 2.190 acc 0.358 | held-out 0.328 (depth>=12: 0.095)
+   22.7m QAT  step   24456 samples  25.04M  lr 2.17e-04  loss 2.161 acc 0.364 | held-out 0.323 (depth>=12: 0.086)
+   23.7m QAT  step   25558 samples  26.17M  lr 1.49e-04  loss 2.177 acc 0.352 | held-out 0.330 (depth>=12: 0.096)
+   24.7m QAT  step   26687 samples  27.33M  lr 1.02e-04  loss 2.163 acc 0.348 | held-out 0.322 (depth>=12: 0.087)
+   25.7m QAT  step   27809 samples  28.48M  lr 6.99e-05  loss 2.114 acc 0.376 | held-out 0.323 (depth>=12: 0.089)
+resumed /mnt/user-data/outputs/cube_train/ckpt.npz: {'elapsed': 1544.1754884719849, 'samples': 28476416, 'steps': 27809}
+[data] building tablebase labels ...
+   25.8m QAT  step   27810 samples  28.48M  lr 6.88e-05  loss 2.206 acc 0.345 | held-out 0.323 (depth>=12: 0.091)
+   26.8m QAT  step   28962 samples  29.66M  lr 4.65e-05  loss 2.214 acc 0.333 | held-out 0.325 (depth>=12: 0.088)
+   27.8m QAT  step   30126 samples  30.85M  lr 3.20e-05  loss 2.170 acc 0.351 | held-out 0.334 (depth>=12: 0.098)
+[done] 31.1M samples, 30361 steps. Device-integer top-1 on held-out: 0.323
+  wrote /home/claude/cubework/bench/cube_model.h: 85.0 KB
+[emit] wrote /home/claude/cubework/bench/cube_model.h

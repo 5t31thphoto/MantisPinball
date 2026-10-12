@@ -1,0 +1,77 @@
+@PACK Orienteering
+@ENTRY basics|Map and Compass Basics
+A map and compass never need batteries and never lose signal. Learn them before you need them.
+
+THE COMPASS: the red needle always points to magnetic north. The rotating bezel (dial) has the degrees; the flat baseplate has a direction-of-travel arrow.
+
+THE MAP: oriented means turned so its north matches the ground's north. Lay the compass on the map, rotate the whole map until the needle lines up with the map's north lines, and now the map's features point at the real ones.
+
+CONTOUR LINES show elevation: lines close together mean steep, far apart mean gentle, and a closed ring is a hilltop. Learning to see the shape of the land in the lines is the heart of map reading.
+
+Start every trip by finding yourself on the map and noting which way is which. You cannot navigate from a spot you have not located.
+@END
+@ENTRY bearing|Taking and Following a Bearing
+A bearing is just a direction in degrees (0-360), and following one keeps you walking a straight line to something you cannot yet see.
+
+TAKE A BEARING to a visible target: point the direction-of-travel arrow at it, then rotate the bezel until the needle sits inside the outline (the "shed"). Read the number at the index line - that is your bearing.
+
+FOLLOW A BEARING: hold the compass level in front of you, turn your whole body until the needle is back in the shed, and the travel arrow now points your way. Pick a tree or rock on that line, walk to it, and sight again. Leapfrogging landmarks beats staring at the needle while you trip over roots.
+
+BACK-BEARING: to return, add or subtract 180 degrees and follow that. It walks you back down the same line.
+@END
+@ENTRY declination|Declination in Idaho and Utah
+Magnetic north and true (map) north are not the same place, and the difference is called declination.
+
+In SE Idaho and northern Utah, magnetic north is about 10 to 12 degrees EAST of true north right now. That may not sound like much, but 12 degrees off over a mile puts you a fifth of a mile from where you meant to be.
+
+ADJUSTING: on an adjustable compass, set the declination once (east declination) and everything reads true - forget about it after that. On a basic compass, when going from a true-north map to the field, SUBTRACT the easterly declination from your map bearing; add it going the other way. A memory hook: "east is least (subtract), west is best (add)" when converting true to magnetic.
+
+Declination drifts slowly over years, so check a current value for your exact area before a serious trip.
+@END
+@ENTRY nocompass|Direction Without a Compass
+If you lose your compass, the sky still works.
+
+THE SUN: rises in the east, sets in the west. At solar noon in our latitude it sits due south, and every shadow points north at that moment.
+
+SHADOW-STICK: push a stick upright in flat ground and mark the tip of its shadow. Wait 15 to 20 minutes and mark the new tip. The line from the first mark to the second runs roughly WEST to EAST (first mark is west). Stand with the first mark on your left and you face north.
+
+WATCH METHOD (analog watch): point the hour hand at the sun; halfway between the hour hand and 12 is roughly south.
+
+AT NIGHT: find the Big Dipper, follow its two "pointer" stars to Polaris, the North Star - it sits over true north and barely moves all night. The Dipper wheels around it; Polaris stays put.
+
+These are approximate. Use them to hold a general heading, not to thread a needle.
+@END
+@ENTRY handrails|Handrails, Backstops, and Staying Found
+The best navigators rarely get lost because they build in safety nets.
+
+HANDRAIL: a long feature you keep beside you and follow - a ridge, a river, a road, a powerline, a fence. Instead of a precise bearing, you just "keep the creek on my right."
+
+BACKSTOP (catch feature): something you cannot miss that tells you you've gone too far - a highway, a big river, a lake. If you hit it, you know to turn back. It turns overshooting from a disaster into a signal.
+
+ATTACK POINT: a big obvious landmark near a small hard-to-find goal. Navigate easily to the attack point, then make your careful short push to the goal from there.
+
+STAY FOUND: check your position at every junction, look BACK often (the trail looks different returning), and keep a running sense of your heading and how far you've come. Found is easy to keep; lost is hard to fix.
+@END
+@ENTRY lost|If You Get Lost: STOP
+The moment you feel lost, STOP walking. Every step while confused usually makes it worse.
+
+S - STOP. Sit down. Calm your breathing. You are not in danger yet; panic is the danger.
+T - THINK. When were you last sure of where you were? What have you passed? How long have you walked?
+O - OBSERVE. Get your map and compass out. Look for handrails and landmarks. Get to an opening where you can see.
+P - PLAN. If you can retrace to a known point, do it deliberately. If not, and someone knows your plan, staying put and signaling is often safest.
+
+SIGNAL FOR HELP in threes - three whistle blasts, three fires, three flashes - is the universal call for help. Make yourself big and visible: an open meadow, bright clothing, a smoky fire by day.
+
+TELL SOMEONE your route and return time BEFORE every trip. A searcher who knows where to look finds you fast; one who doesn't may never start.
+@END
+@ENTRY terrain|Reading Terrain to Navigate
+The land itself is a map if you learn to read it.
+
+DRAINAGES: water flows downhill to bigger water. In this settled region, following a creek downstream will eventually reach a road, ranch, or river - the reliable "when truly lost, go downhill and downstream" rule (though the travel can be rough and brushy).
+
+ASPECT: south-facing slopes are drier, warmer, and more open; north-facing slopes hold snow and thick timber. Which way a slope faces tells you your direction and what the travel will be like.
+
+RANGES AS LANDMARKS: the Bear River, Wasatch, Wellsville, and Bannock ranges make big, reliable references. Learn the skyline shapes from your area so a glance tells you which way you face.
+
+PACE AND TIME: on trail, plan 2 to 3 miles an hour, much less cross-country or climbing; add roughly an hour for every 1,000 feet of gain. Navigate by the clock too - set a turnaround time and honor it, because darkness and cold are navigation hazards of their own.
+@END

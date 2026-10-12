@@ -1,0 +1,238 @@
+You are writing ONE app ("mode") for a custom ESP32-S3 firmware called
+Pinball-S3. Output must compile under PlatformIO (Arduino core 2.0.14) and run
+on the real LilyGo T-Display-S3 the FIRST time, with no iteration. Follow every
+constraint below exactly. When unsure, choose the smaller, simpler, safer option.
+
+================================================================================
+THE APP TO BUILD
+================================================================================
+Name (menu label):  MOON PHASE
+Id (lowercase):      moonphase
+What it does:        shows the current moon phase with a drawn moon and the phase name
+
+Deliver these TWO files, complete, no placeholders:
+  src/moonphase/moonphase_mode.h
+  src/moonphase/moonphase_mode.cpp
+
+================================================================================
+DEVICE (HARD HARDWARE LIMITS)
+================================================================================
+Board:    LilyGo T-Display-S3
+MCU:      ESP32-S3, Arduino core 2.0.14, PlatformIO espressif32@6.5.0
+Display:  170x320 ST7789 ST7789, portrait. Screen W=170, H=320.
+PSRAM:    NONE. This is the single most important constraint.
+Flash:    16MB
+
+================================================================================
+MEMORY BUDGET (REAL NUMBERS — DO NOT EXCEED)
+================================================================================
+Estimated free heap at runtime:        38880 bytes
+Largest single allocatable block:      unknown (assume ~= free heap)
+Safe to allocate IF your app uses TLS networking:   0 bytes
+Safe to allocate if your app does NOT network:      14880 bytes
+
+RULES THAT ACTUALLY BITE (learned the hard way):
+  * The 170x320 frame buffer sprite (~108KB) is ALREADY allocated on the heap.
+    You do not create it; you draw into the shared `fb` sprite.
+  * NEVER put a buffer larger than ~2KB in static/global scope (BSS). Two 60KB
+    static buffers once overflowed internal SRAM by 60,880 bytes. Big buffers
+    MUST be malloc'd in your Enter() and free()'d in your Shutdown().
+  * A TLS connection (WiFiClientSecure) needs ~40KB of transient heap for its
+    handshake. If you network, keep your own allocations small and free the
+    big stuff before connecting. Only ONE TLS client alive at a time.
+  * NEVER place a large array (>2-3KB) on the stack inside a function that also
+    opens a WiFiClientSecure — it overflows the task stack and crashes. Use a
+    static or heap buffer instead.
+  * For JPEG images, a shared 60KB buffer `g_jpegBuf` exists (extern uint8_t*,
+    with g_jpegBufLen). Acquire it on Enter, release on Shutdown. TJpgDec only
+    decodes BASELINE JPEG (no progressive/PNG/WebP). When rendering decoded
+    blocks into the sprite, call fb.setSwapBytes(true) ON THE SPRITE before
+    pushImage, and do NOT also set TJpgDec.setSwapBytes(true) (double-swap =
+    broken colors). drawJpg(0,0,...) — the callback applies the origin, so
+    passing the origin to drawJpg too double-offsets the image off-screen.
+
+================================================================================
+THE APP CONTRACT (what you must implement)
+================================================================================
+Your .cpp defines exactly these four functions (all `void f()`), declared in
+your .h. The firmware calls them:
+
+  void moonphaseEnter();      // once when the app opens: init state, malloc buffers
+  void moonphaseTick();       // every frame (~60fps): read input, update state
+  void moonphaseDraw();       // every frame: render into fb, then fb.pushSprite(0,0)
+  void moonphaseShutdown();   // once when leaving: free buffers, save state, net off
+
+Skeleton your code MUST match (this is the proven shape):
+
+  // moonphase_mode.h
+  #pragma once
+  void moonphaseEnter();
+  void moonphaseTick();
+  void moonphaseDraw();
+  void moonphaseShutdown();
+
+  // moonphase_mode.cpp
+  #include <Arduino.h>
+  #include <TFT_eSPI.h>
+  #include "moonphase_mode.h"
+  #include "../theme_colors.h"
+  extern TFT_eSprite fb;                       // the shared 170x320 sprite
+  extern bool btnL, btnR, btnL_prev, btnR_prev;
+  static constexpr int W = 170;
+  static constexpr int H = 320;
+  // ... your static state ...
+  void moonphaseEnter()    { fb.setRotation(0); /* init */ }
+  void moonphaseTick()     { bool lEdge=btnL&&!btnL_prev; bool rEdge=btnR&&!btnR_prev; /* ... */ }
+  void moonphaseDraw()     { fb.fillSprite(TEAL_DEEP); /* draw */ fb.pushSprite(0,0); }
+  void moonphaseShutdown() { /* free/save */ }
+
+================================================================================
+INPUT & GLOBAL GESTURES (NEVER VIOLATE)
+================================================================================
+Two buttons only: btnL (left), btnR (right). Use EDGE detection:
+    bool lEdge = btnL && !btnL_prev;   // rising edge = a tap
+    bool rEdge = btnR && !btnR_prev;
+Convention used by every app: LEFT = scroll/advance/cycle, RIGHT = select/confirm.
+RESERVED, handled globally — your app must NEVER read or act on these combos:
+    hold BOTH buttons ~3s  = sleep
+    double-click BOTH      = return to menu
+So: never use `btnL && btnR` together for anything. Single-button long-press is
+OK for a secondary action (e.g. hold-L) if you need one.
+
+================================================================================
+DRAWING API (draw into `fb`, a TFT_eSprite; then fb.pushSprite(0,0))
+================================================================================
+Colors come from theme_colors.h — USE THESE NAMES (don't invent RGB):
+    TEAL_DEEP (background), TEAL_DARK, TEAL_LIGHT, TEAL_BRIGHT,
+    PURPLE, PURPLE_DARK, PURPLE_LIGHT, LIME, LIME_DARK, LIME_PALE
+Common calls:
+    fb.fillSprite(TEAL_DEEP);
+    fb.fillRect(x,y,w,h,color); fb.fillRoundRect(x,y,w,h,r,color); fb.drawRect(...)
+    fb.drawString(text, x, y, font);   // font 1 small, 2 medium, 4 large
+    fb.setTextColor(color); fb.setTextDatum(ML_DATUM|MC_DATUM|MR_DATUM|TL_DATUM|TR_DATUM);
+    fb.drawLine(...); fb.fillCircle(...); fb.fillTriangle(...);
+A typical screen: header bar fillRect(0,0,W,18,PURPLE_DARK) with a title; body;
+footer fillRect(0,H-14,W,14,PURPLE_DARK) with "L: ..."/"R: ..." hints.
+
+FIRMWARE API SURFACE available to apps:
+  screen.
+    fb.fillSprite(color)
+        # Clear the frame buffer to a color.
+    fb.pushSprite(0,0)
+        # Blit the frame buffer to the display.
+    fb.drawString(text,x,y,font)
+        # Draw text at x,y.
+    fb.fillRoundRect(x,y,w,h,r,color)
+        # Filled rounded rectangle.
+    fb.setTextColor(color)
+        # Set text color (theme_colors.h palette).
+    fb.setTextDatum(datum)
+        # Text anchor (ML_DATUM, MC_DATUM, TR_DATUM...).
+  storage.
+    Preferences p; p.begin(ns,ro)
+        # Open an NVS namespace.
+    p.putBytes(key,&v,sizeof v)
+        # Persist a POD blob.
+    p.getBytes(key,&v,sizeof v)
+        # Load a POD blob.
+    LittleFS.open(path,"r")
+        # Open a content pack from flash.
+  network.
+    WiFiClientSecure c; c.connect(host,443)
+        # TLS fetch (one at a time; ~40KB heap).
+    WiFi.softAP(name)
+        # Start a captive-portal AP (see weather/share).
+    esp_now_send(peer,buf,len)
+        # ESP-NOW peer message (see versus/pet).
+  profile.
+    qpAddXp(n)
+        # Grant player XP (quest profile).
+    qpAddItem(id,n) / qpUseItem(id)
+        # Shared inventory.
+    qpGrantPetXp(n)
+        # Deposit pet XP (consumed by Pet Mode).
+    qpGrantPerk(PERK_*)
+        # Queue a pinball perk for next game.
+  lifecycle.
+    void xEnter()
+        # Called once when the app opens.
+    void xTick()
+        # Called every frame: read btnL/btnR edges, update state.
+    void xDraw()
+        # Called every frame: render to fb, then fb.pushSprite(0,0).
+    void xShutdown()
+        # Called once when leaving; free resources, save state.
+
+================================================================================
+PERSISTENCE & PROFILE (optional, only if your app needs it)
+================================================================================
+NVS via Preferences: Preferences p; p.begin("yourns", false); p.putBytes(...);
+  p.getBytes(...); p.end();  — keep your own namespace, don't touch others.
+LittleFS for content packs: fs::File f = LittleFS.open("/content/x.pak","r");
+  (note the fs:: qualifier — required on core 2.0.x).
+Shared RPG profile (only if relevant): qpAddXp(n), qpAddItem(id,n),
+  qpUseItem(id), qpItemCount(id), qpGrantPetXp(n), qpGrantPerk(PERK_*).
+  Include "../quests/quest_profile.h" if you use these.
+
+================================================================================
+NETWORKING (only if your app needs the internet)
+================================================================================
+WiFi creds live in NVS namespace "btcminer" keys "ssid"/"pass" (set up by the
+miner/weather portals). Read them, WiFi.mode(WIFI_STA); WiFi.begin(ssid,pass);
+wait for WL_CONNECTED with a ~15s timeout. Use WiFiClientSecure for https with
+c.setInsecure(); follow redirects ITERATIVELY (one TLS client per hop, never two
+alive at once). Disconnect + WiFi.mode(WIFI_OFF) in Shutdown(). Browser-style
+User-Agent; many CDNs reject generic UAs.
+ESP-NOW for device-to-device: WiFi.mode(WIFI_STA), esp_now_init(),
+esp_now_register_recv_cb(esp_now_recv_cb_t(yourCb)), broadcast peer FF:FF:FF:FF:FF:FF.
+
+================================================================================
+EXISTING APPS (for style reference; don't duplicate)
+================================================================================
+  - PINBALL BLASTER (id pinball, Game)  [built-in core game]
+  - CORNER POCKET (id pocket, Game)  [built-in core game]
+  - JACKS OR BETTER (id slots, Game)  [built-in core game]
+  - VERSUS PINBALL (id versus, Game)
+  - WEATHER REPORT (id weather, Live Data)
+  - SPACE WEATHER (id space, Live Data)
+  - FLIGHTS OVERHEAD (id flight, Live Data)
+  - BTC MINER (id miner, Live Data)  [built-in core game]
+  - CRYPTO CANDLES (id candles, Live Data)
+  - NASA APOD (id apod, Live Data)
+  - RABBIT HOLE (id rabbit, Creative)
+  - MANTIS TALE (id cyoa, Creative)
+  - FIRST AID (id firstaid, Guide)
+  - SURVIVAL GUIDE (id survival, Guide)
+  - SCOUT SKILLS (id scout, Guide)
+  - QUESTS (id quests, System)
+  - MANTIS PET (id pet, System)
+  - PINBALL SHARING (id share, System)
+
+================================================================================
+OUTPUT FORMAT (so the installer can import it in one shot)
+================================================================================
+Output ONLY the two files, each in its own fenced block, with the exact path as
+the first comment line. No prose between or after. Example:
+
+```cpp
+// FILE: src/moonphase/moonphase_mode.h
+#pragma once
+void moonphaseEnter();
+...
+```
+
+```cpp
+// FILE: src/moonphase/moonphase_mode.cpp
+#include <Arduino.h>
+...
+```
+
+After these two files, output ONE json block describing the app for the manifest:
+
+```json
+{ "id": "moonphase", "name": "MOON PHASE", "category": "system" }
+```
+(category: one of game, livedata, creative, guide, system)
+
+Do not output anything else. The installer parses the FILE: markers and the json
+block to create the files and register the app automatically.

@@ -1,0 +1,133 @@
+@PAGE start
+THE DROWNED RELIQUARY
+
+The drought pulled the reservoir down past living memory, and a drowned village rose from the mud - a church spire breaking the surface like a held breath. Divers won't go near it. You will.
+
+What you carry is what you earned. The cold water forgives nothing it isn't shown.
+@GO L|Search the mudflats first|mudflats
+@GO R|Go straight to the spire|spire
+
+@PAGE mudflats
+The exposed mud is a museum of the lost town - a doorframe, a child's shoe, the rim of a well. Reading the ruin, you learn the church sat at the village heart, the reliquary with it.
+@XP 15
+@DIE 8 wise
+@GO L|Investigate the old well|well
+@GO R|Wade to the spire|spire
+
+@PAGE well
+The well rim hides a glint of metal below the waterline. Reaching it means lowering into the narrow shaft.
+@USE L|rope|Rappel down safely|wellprize|wellslip
+@GO R|Climb down the slick stones|wellslip
+
+@PAGE wellslip
+You climb down without a line. Three feet from the glint your boot slips and you splash into cold black water, barely catching the rim. Whatever was down there stays there.
+@HP -2
+@GO L|Wade to the spire|spire
+@GO R|Wade to the spire|spire
+
+@PAGE wellprize
+On the line you reach the glint easily: a brass offering-token, green with age, the village mark stamped on its face. A good omen.
+@XP 15
+@ITEM luckcharm
+@GO L|Wade to the spire|spire
+@GO R|Wade to the spire|spire
+
+@PAGE spire
+Cold water laps at the spire's broken windows. Below, the flooded church waits - a green-black room you enter one breath at a time. It is very dark down there.
+@GO L|Dive with a guide line|ropedive
+@GO R|Free-dive on instinct|freedive
+
+@PAGE freedive
+You go under with no line, into water that swallows the light. The cold grips your chest sooner than you expected.
+@ROLL L|Stay calm and slow|7|courage|navecheck|panic
+@ROLL R|Push deep and fast|8|agility|navecheck|panic
+
+@PAGE panic
+Your lungs burn, the dark presses in, and you lose your bearings. You claw to the surface gasping, having seen nothing.
+@HP -3
+@GO L|Dive with a guide line|ropedive
+@GO R|Dive with a guide line|ropedive
+
+@PAGE ropedive
+You tie off to the spire and descend the line hand over hand, controlled, always able to find the way back. The rope is your tether to the living world.
+@XP 20
+@GO L|Enter the nave|navecheck
+@GO R|Enter the nave|navecheck
+
+@PAGE navecheck
+The nave is black as ink and full of drifting hazards. Light would show the whole drowned room at once.
+@USE L|torch|Light the nave|navebright|navedark
+@USE R|torch|Sweep your beam below|navebright|navedark
+
+@PAGE navedark
+Feeling blindly along the pews, you snag your suit on a broken beam and waste precious air finding the altar by touch. Your fingers close on a stone box: the reliquary.
+@HP -1
+@GO L|Open it underwater|openhere
+@GO R|Carry it up to open in air|carryup
+
+@PAGE navebright
+Your torch lights the drowned nave - pews drifting, a mural dissolving on the far wall, fish silver through the broken roof. At the altar, plain in the beam, sits the stone reliquary.
+@XP 15
+@GO L|Open it underwater|openhere
+@GO R|Carry it up to open in air|carryup
+
+@PAGE openhere
+You work the lid in the cold dark, fingers clumsy, air thinning.
+@USE L|multitool|Ease the latch with a tool|prize|fumble
+@ROLL R|Force the lid by hand|7|wits|prize|fumble
+
+@PAGE fumble
+The lid jams and your air runs short. You grab the whole box and kick for the surface, lungs screaming, hands cut on the rough stone.
+@HP -2
+@GO L|Tend your hands first|treathands
+@GO R|Open it on the mud now|prize
+
+@PAGE treathands
+The cuts are deep and the cold has slowed your blood to a crawl.
+@USE L|medkit|Bind your hands properly|prize|prizehurt
+@GO R|Wrap them in a rag|prizehurt
+
+@PAGE prizehurt
+You bind your hands in a torn shirt and grit your teeth, shaking, before turning to the box.
+@HP -1
+@GO L|Open the box|prize
+@GO R|Open the box|prize
+
+@PAGE carryup
+You bring the reliquary up into daylight and set it on the dry mud, breathing hard. In the sun it's only a plain stone box, beaded with water - whatever it holds has waited a long time for air.
+@XP 20
+@GO L|Open it in the light|prize
+@GO R|Open it in the light|prize
+
+@PAGE prize
+The lid lifts. Inside, wrapped in tarnished foil, is a token the village hid before the waters came - small, but theirs, and now a story you carry out of the drowned dark.
+@XP 25
+@DIE 8 lucky
+@GO L|Take it to the county museum|museumcheck
+@GO R|Return it to the deep|return
+
+@PAGE museumcheck
+The museum is two days' hike. The token must survive the journey dry and protected, and so must you - the trail back crosses the reservoir's crumbling spillway.
+@USE L|rope|Cross the spillway safely|museum|museumhard
+@GO R|Cross the spillway free|museumhard
+
+@PAGE museumhard
+You cross the broken spillway without protection, edging along a slick lip above a forty-foot drop. You make it, heart hammering, the token clutched to your chest.
+@HP -1
+@GO L|Reach the museum|museum
+@GO R|Reach the museum|museum
+
+@PAGE museum
+ENDING: THE NAME RETURNED
+
+You set the token before a curator whose eyes go wide. The drowned village will have its name back, in a glass case where children can read it. Some treasures are worth more shared than kept. You sign the donation and walk out lighter than you came.
+@XP 35
+@END
+
+@PAGE return
+ENDING: WHAT BELONGS TO THE WATER
+
+You set the token back in its box and lower it into the deepest pool, letting the village keep its secret as the first rains begin to refill the reservoir. Some things belong to the water. You hike out as the drops begin to fall, and tell no one what you found.
+@XP 30
+@DIE 10 wild
+@END

@@ -1,0 +1,144 @@
+@PAGE start
+THE DERELICT ARRAY
+
+The radio array went silent forty years ago. You've hiked three days to reach it - a field of rusting dishes under a hard desert sky, and at the center a control bunker with a door that shouldn't still have power.
+
+What you carry is what you earned. The desert rewards the prepared and buries the rest.
+@GO L|Walk the dish field first|field
+@GO R|Go straight to the bunker|door
+
+@PAGE field
+You walk among the great dishes. One still turns, slowly, tracking something in the sky. Following its aim teaches you where the array still listens - and hints at where the power hides.
+@XP 15
+@DIE 8 wise
+@GO L|Trace the power source|power
+@GO R|Go to the bunker door|door
+
+@PAGE power
+The cables run to a sealed hatch in the ground - a buried equipment vault. The hatch is rusted but not locked, just heavy.
+@USE L|multitool|Lever the hatch open|vault|nopower
+@ROLL R|Heave it open by hand|8|courage|vault|nopower
+
+@PAGE nopower
+The hatch won't give and the heat is sapping you. You leave the buried vault for now and head for the bunker.
+@HP -1
+@GO L|Go to the bunker door|door
+@GO R|Go to the bunker door|door
+
+@PAGE vault
+Below: a geothermal tap, humming, feeding the whole dead array off the planet's own heat. You also find a coil of good cable and a sealed ration tin left by the last crew.
+@XP 25
+@ITEM ration
+@GO L|Climb out and enter the bunker|door
+@GO R|Climb out and enter the bunker|door
+
+@PAGE door
+The bunker door is seized with rust and forty years of grit.
+@USE L|multitool|Work the mechanism free|inside|forced
+@ROLL R|Pry it by brute force|8|courage|inside|forced
+
+@PAGE forced
+The door shrieks open and you stumble into darkness, barking a shin on something unseen.
+@HP -2
+@GO L|Find light|lightroom
+@GO R|Feel your way in|darkroom
+
+@PAGE darkroom
+You grope through pitch black, trip over a fallen chair, and crack your knee on a console. Something sparks faintly. You really need to see.
+@HP -1
+@GO L|Find light|lightroom
+@GO R|Find light|lightroom
+
+@PAGE lightroom
+The room is black as a tomb. Light would reveal it all at once.
+@USE L|torch|Light the control room|inside|fumbledark
+@USE R|torch|Sweep your beam around|inside|fumbledark
+
+@PAGE fumbledark
+With no light you make out only a faint amber glow across the room - a console, still alive. You move toward it by feel.
+@GO L|Reach the amber glow|console
+@GO R|Reach the amber glow|console
+
+@PAGE inside
+Your light finds a control room frozen mid-shift: cold coffee cups, a logbook open to its last entry, a console glowing faint amber. Something here never stopped running.
+@GO L|Read the last log entry|log
+@GO R|Examine the live console|console
+
+@PAGE log
+The last entry, in a shaking hand: "It answered. We are turning the dishes away." The date is the day the array went silent.
+@XP 20
+@GO L|Go to the console|console
+@GO R|Go to the console|console
+
+@PAGE console
+The console is receiving. A slow pattern repeats - not noise, a deliberate signal, coming from the very sky the dishes were turned from.
+@GO L|Decode the pattern|decodecheck
+@GO R|Shut it all down|cut
+
+@PAGE decodecheck
+The pattern is dense. The locked technical cabinet beside you surely holds the decoding manuals.
+@USE L|multitool|Open the cabinet for the manuals|message|decoderaw
+@GO R|Decode it by hand|decoderaw
+
+@PAGE decoderaw
+With no manuals you map the structure yourself - primes, then something stranger, building toward meaning.
+@USE L|luckcharm|Trust the leap of intuition|message|scramble
+@ROLL R|Grind through the mathematics|8|wits|message|scramble
+
+@PAGE scramble
+The pattern slips away, too alien to hold in one sitting. You save what you can to study later.
+@HP -1
+@GO L|Try to reply anyway|replycheck
+@GO R|Shut it all down|cut
+
+@PAGE message
+The sequence resolves into something near meaning - a direction, a distance, an invitation. You understand just enough to know the choice is yours.
+@XP 25
+@DIE 8 keen
+@GO L|Power the dish to reply|replycheck
+@GO R|Shut it all down|cut
+
+@PAGE replycheck
+To reply you must aim the great dish, which means freeing the seized azimuth gear high on the mount outside - a climb.
+@USE L|rope|Rope up and free the gear|reply|climbfail
+@USE R|rope|Rig a safety line and climb|reply|climbfail
+
+@PAGE climbfail
+You free-climb the rusted mount. Halfway up a rung snaps and you ride a shower of rust to the sand, the dish still frozen. No reply tonight.
+@HP -2
+@GO L|Tend your wounds|climbhurt
+@GO R|Shut it all down|cut
+
+@PAGE climbhurt
+You're scraped raw and bleeding in the desert cold.
+@USE L|medkit|Patch yourself properly|restleave|restraw
+@GO R|Bind it with a rag|restraw
+
+@PAGE restraw
+You wrap the worst cuts in a torn shirt and shiver through the night by the amber glow.
+@HP -1
+@GO L|Leave at dawn|restleave
+@GO R|Leave at dawn|restleave
+
+@PAGE restleave
+ENDING: THE MYSTERY KEPT
+
+At dawn you shoulder your pack and hike out, the signal still pulsing behind you, unanswered. Some questions are bigger than one person on one night. You carry it down the mountain like a stone in your pocket - heavy, and somehow precious.
+@XP 25
+@END
+
+@PAGE reply
+ENDING: THE HAND RAISED
+
+You align the great dish and send a single reply - a prime sequence of your own, a hand raised across the dark. The dish hums under your palms. Whether anything answers, you may never know. But the array is listening again, and so, now, are you.
+@XP 35
+@DIE 10 wild
+@END
+
+@PAGE cut
+ENDING: THE QUIET RESTORED
+
+You pull the main breaker and the amber light dies. The desert goes truly silent for the first time in forty years. Some doors are kinder left closed. You hike out under clean stars, the array dark behind you, and sleep that night without dreaming.
+@XP 25
+@ITEM luckcharm
+@END

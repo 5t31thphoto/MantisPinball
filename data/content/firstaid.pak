@@ -1,0 +1,90 @@
+@PACK First Aid
+@ENTRY bleeding|Severe Bleeding
+Stopping heavy bleeding fast can save a life. Stay calm and protect yourself from blood contact if possible.
+@STEP Check the scene is safe, then look at the wound. Bright spurting blood is arterial and urgent.
+@STEP Press firmly on the wound with a clean cloth or your hand. Direct pressure stops most bleeding.
+@STEP Keep pressing without peeking. If blood soaks through, add more cloth on top; do not remove the first layer.
+@STEP Raise the injured part above the heart if no bones are broken.
+@STEP If bleeding will not stop and it is a limb, a tight tourniquet above the wound is a last resort. Note the time.
+@STEP Keep the person warm and lying down. Get emergency help as soon as possible.
+@END
+@ENTRY burns|Burns
+Cooling a burn quickly limits the damage. Never use ice, butter, or ointments on a fresh burn.
+@STEP Stop the burning: remove the person from heat and take off hot or soaked clothing unless it is stuck to the skin.
+@STEP Cool the burn under cool (not ice-cold) running water for at least 10 to 20 minutes.
+@STEP Remove rings or tight items near the burn before swelling starts.
+@STEP Cover loosely with a clean, non-stick dressing or plastic wrap. Do not pop blisters.
+@STEP For large, deep, or facial burns, or burns on a child, get emergency help right away.
+@END
+@ENTRY choking|Choking
+A person who cannot cough, speak, or breathe needs help immediately. If they can still cough, let them.
+@STEP Ask "Are you choking?" If they cannot answer or cough, act now.
+@STEP Give up to 5 firm back blows between the shoulder blades with the heel of your hand.
+@STEP If that fails, give up to 5 abdominal thrusts: hands above the navel, pull sharply inward and upward.
+@STEP Alternate 5 back blows and 5 thrusts until the object clears or help arrives.
+@STEP If the person becomes unconscious, lower them safely and begin CPR. Call emergency services.
+@END
+@ENTRY cpr|CPR Basics
+CPR keeps blood moving when the heart stops. Hands-only CPR is effective and easy to remember.
+@STEP Check responsiveness: tap and shout. If no response and no normal breathing, send someone to call for help and get an AED.
+@STEP Place the heel of one hand in the center of the chest, the other hand on top, fingers interlocked.
+@STEP Push hard and fast, about 2 inches deep, at 100 to 120 pushes per minute. Let the chest rise fully between each.
+@STEP Keep going without stopping. If an AED arrives, turn it on and follow its spoken instructions.
+@STEP Continue until the person moves, trained help takes over, or you cannot continue.
+@END
+@ENTRY shock|Treating for Shock
+Shock is when the body is not getting enough blood flow. It can follow any serious injury and is life-threatening.
+@STEP Look for signs: pale or grey skin, cold sweat, rapid shallow breathing, weakness, or confusion.
+@STEP Lay the person down and raise their legs about a foot if no leg or spine injury is suspected.
+@STEP Keep them warm with a coat or blanket, but do not overheat them.
+@STEP Loosen tight clothing. Do not give food or drink even if they ask.
+@STEP Reassure them calmly and get emergency help. Monitor breathing until help arrives.
+@END
+@ENTRY sprain|Sprains and Strains
+A sprain is a stretched or torn ligament. Most are treated with the RICE method.
+@STEP Rest the injured joint; stop the activity that caused it.
+@STEP Ice or cool the area for 15 to 20 minutes, wrapped in cloth, not directly on skin.
+@STEP Compress with an elastic bandage, snug but not so tight it cuts off circulation.
+@STEP Elevate the limb above heart level to reduce swelling.
+@STEP If it cannot bear weight, is badly deformed, or pain is severe, treat it as a possible break and seek care.
+@END
+@ENTRY break|Suspected Broken Bone
+Do not try to straighten a broken bone. Keep it still to prevent further injury.
+@STEP Keep the person calm and still. Do not move the injured part unnecessarily.
+@STEP Stop any bleeding with gentle pressure around, not on, a protruding bone.
+@STEP Immobilize the injury with a splint and padding, securing the joints above and below it.
+@STEP Apply something cool wrapped in cloth to reduce swelling. Watch for signs of shock.
+@STEP Get medical help. Do not give food or drink in case surgery is needed.
+@END
+@ENTRY heatstroke|Heat Stroke
+Heat stroke is a medical emergency. The body can no longer cool itself and the temperature climbs dangerously.
+@STEP Recognize it: hot skin, confusion, headache, fast pulse, and often no sweating.
+@STEP Move the person to a cool, shaded place immediately and call for emergency help.
+@STEP Cool them fast: wet the skin, fan them, place cool packs at the neck, armpits, and groin.
+@STEP If they are alert, give small sips of cool water. Never give fluids to someone who is confused or vomiting.
+@STEP Keep cooling until help arrives or their temperature drops and they recover.
+@END
+@ENTRY hypothermia|Hypothermia
+Hypothermia is dangerously low body temperature. It can happen even in cool, wet, windy weather.
+@STEP Recognize it: intense shivering, clumsiness, slurred speech, confusion, drowsiness.
+@STEP Get the person out of cold, wind, and wet. Move them gently; rough handling can be dangerous.
+@STEP Remove wet clothing and wrap them in dry blankets, including the head and neck.
+@STEP Give warm sweet drinks only if they are fully alert. Never give alcohol.
+@STEP Warm the core (chest, neck) with body heat or warm packs. Seek medical help for severe cases.
+@END
+@ENTRY bites|Bites and Stings
+Insect stings and animal bites are common at camp and usually minor, but a few need real attention.
+@STEP For a bee or wasp sting, scrape the stinger out sideways (don't pinch), then wash and apply a cold pack for pain and swelling.
+@STEP Watch for a severe allergic reaction: trouble breathing, swelling of the face or throat, widespread hives, dizziness. This is an emergency. Use an epinephrine auto-injector if available and call for help.
+@STEP For an animal bite, wash the wound thoroughly with clean water and soap for several minutes, then cover it. All animal bites risk infection and need medical follow-up.
+@STEP For a snakebite, keep the person calm and still, keep the bitten limb below heart level, remove rings and watches, and get to help fast. Do not cut, suck, or apply ice or a tourniquet.
+@STEP For ticks, grasp close to the skin with tweezers and pull straight out steadily. Wash the area and watch for a rash or fever in the following weeks.
+@END
+@ENTRY blisters|Blisters and Cuts
+Small wounds are the most common camp injury; treating them early keeps a trip from being ruined.
+@STEP For a hot spot (a forming blister), stop and cover it with tape or a blister pad before it opens. Prevention beats treatment.
+@STEP Leave an intact blister unbroken if you can; it protects the skin beneath. Pad around it with a doughnut of moleskin.
+@STEP For a small cut or scrape, rinse with clean or treated water, remove any grit, and cover with a clean bandage. Change it if it gets wet or dirty.
+@STEP Watch any wound for infection: spreading redness, warmth, swelling, pus, or red streaks. These need medical care.
+@STEP Keep hands clean before treating wounds, and keep your first aid kit stocked with tape, gauze, and antiseptic.
+@END

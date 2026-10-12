@@ -1,0 +1,9 @@
+.pio/
+.pio-core/
+.installer-venv/
+__pycache__/
+flash_parts/
+firmware_merged.bin
+website/firmware/*.bin
+website/firmware/build.json
+tools/tests/*.bin
