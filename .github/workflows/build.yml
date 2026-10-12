@@ -113,6 +113,14 @@ jobs:
           PK="$PWD/data/content/psychic.mpk"
           g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_solo.cpp -o /tmp/psy_solo && /tmp/psy_solo
           g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_perf.cpp -o /tmp/psy_perf && /tmp/psy_perf
+          # Psychic driven by the REAL chord guard from the welcome screen
+          g++ -std=gnu++17 -O1 -w -DARDUINO=10814 -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_flow.cpp -o /tmp/psy_flow && /tmp/psy_flow
+          # entry latch + central chord guard, using main.cpp's own code
+          g++ -std=gnu++17 -O1 -w tools/tests/test_input_guard.cpp -o /tmp/guard && /tmp/guard
+          # house rule: every app sets up on Enter and frees on Shutdown - 5 cycles each under ASan
+          for t in tools/tests/lifecycle/t_*.cpp; do
+            g++ -std=gnu++17 -O1 -w -fsanitize=address,undefined -fno-sanitize-recover=all -DARDUINO=10814 -I tools/tests/stub -I src "$t" -o /tmp/lc && /tmp/lc || exit 1
+          done
           # Mantis Chat: MantisNow protocol against frames built from MANTISNOW.md
           g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_mantischat.cpp -o /tmp/chat && /tmp/chat
           g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_danceparty.cpp -o /tmp/dance && /tmp/dance
