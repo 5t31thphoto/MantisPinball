@@ -1,15 +1,15 @@
 // FILE: src/party/pb_hangman.cpp
-// SIX-GUN MANTIS (Hangman) - cowboy-mantis themed word guessing.
+// SIX-GUN MANTIS (Hangman) - cowboy-mantis themed hmWord guessing.
 //
-// One player sets a word using the shared on-screen keyboard (pbkbd: L walks
+// One player sets a hmWord using the shared on-screen keyboard (pbkbd: L walks
 // the keys, R selects, '<' backspaces, '#' enters). Then the other players take
 // turns guessing letters with the same keyboard. Instead of a gallows, a
 // cowboy mantis faces a six-shooter: every wrong guess loads another chamber,
 // and six wrong guesses ends the round.
 //
-// The word is hidden from the guessers - it is sent to nobody. Each guessed
+// The hmWord is hidden from the guessers - it is sent to nobody. Each guessed
 // letter is broadcast as a move, and every device reveals matching positions
-// from its own copy of the masked word, so the setter's device is the only one
+// from its own copy of the masked hmWord, so the setter's device is the only one
 // that ever holds the answer.
 #include <Arduino.h>
 #include <TFT_eSPI.h>
@@ -28,7 +28,7 @@ static constexpr int HM_MISSES=6;      // six chambers
 
 enum : uint8_t { OP_WORD=1, OP_GUESS=2 };
 
-static char  word[HM_MAX_WORD+1];      // setter's device only (and length elsewhere)
+static char  hmWord[HM_MAX_WORD+1];      // setter's device only (and length elsewhere)
 static int   wordLen=0;
 static char  shown[HM_MAX_WORD+1];     // '_' or the revealed letter, all devices
 static bool  guessed[26];
@@ -40,10 +40,10 @@ static uint32_t animT=0;
 
 static void hmStart(uint32_t sd,int n,int seat){
     (void)sd;(void)n;(void)seat;
-    memset(word,0,sizeof(word)); memset(shown,0,sizeof(shown));
+    memset(hmWord,0,sizeof(hmWord)); memset(shown,0,sizeof(shown));
     memset(guessed,0,sizeof(guessed));
     wordLen=0; misses=0; settingPhase=true; roundOver=false; guessersWon=false;
-    setterSeat=0;                       // seat 0 sets the first word
+    setterSeat=0;                       // seat 0 sets the first hmWord
     pbkbd::begin(HM_MAX_WORD);
 }
 
@@ -64,17 +64,17 @@ static void hmApply(const PbMove* m){
         break; }
     case OP_GUESS: {
         // data[1] = letter, data[2] = bitmask of matching positions (from the
-        // setter's device, which is the only one holding the word)
+        // setter's device, which is the only one holding the hmWord)
         if(m->len<3) break;
         char c=(char)m->data[1];
         int idx=c-'A'; if(idx>=0&&idx<26) guessed[idx]=true;
         uint16_t mask=(uint16_t)m->data[2] | ((m->len>3)?((uint16_t)m->data[3]<<8):0);
         // Over the link the guesser can't know if it matched, so it sends an
-        // empty mask; the SETTER's device (the only one holding the word)
+        // empty mask; the SETTER's device (the only one holding the hmWord)
         // resolves it and re-announces with the real positions.
-        if(mask==0 && m->len==3 && amSetter() && word[0]){
+        if(mask==0 && m->len==3 && amSetter() && hmWord[0]){
             uint16_t real=0;
-            for(int i=0;i<wordLen&&i<16;i++) if(word[i]==c) real|=(1u<<i);
+            for(int i=0;i<wordLen&&i<16;i++) if(hmWord[i]==c) real|=(1u<<i);
             PbMove ans; memset(&ans,0,sizeof(ans));
             ans.player=m->player; ans.len=4;
             ans.data[0]=OP_GUESS; ans.data[1]=(uint8_t)c;
@@ -104,10 +104,10 @@ static void hmTick(){
             wordLen=0;
             for(int i=0;t[i]&&wordLen<HM_MAX_WORD;i++){
                 char c=(char)toupper((unsigned char)t[i]);
-                if(c>='A'&&c<='Z') word[wordLen++]=c;
+                if(c>='A'&&c<='Z') hmWord[wordLen++]=c;
             }
-            word[wordLen]='\0';
-            if(wordLen<3) { pbkbd::clear(); return; }   // need a real word
+            hmWord[wordLen]='\0';
+            if(wordLen<3) { pbkbd::clear(); return; }   // need a real hmWord
             for(int i=0;i<wordLen;i++) shown[i]='_';
             shown[wordLen]='\0';
             PbMove mv; memset(&mv,0,sizeof(mv));
@@ -130,16 +130,16 @@ static void hmTick(){
             if(c<'A'||c>'Z') return;
             if(guessed[c-'A']) return;               // already tried
             // The GUESSER can't know if it matched - the setter's device owns the
-            // word. So the guess goes out with an empty mask and the setter
+            // hmWord. So the guess goes out with an empty mask and the setter
             // answers with the matching positions.
             PbMove mv; memset(&mv,0,sizeof(mv));
             mv.player=(uint8_t)pbMySeat(); mv.len=3;
             mv.data[0]=OP_GUESS; mv.data[1]=(uint8_t)c; mv.data[2]=0;
-            // On a shared device (pass & play) the setter's word is right here,
+            // On a shared device (pass & play) the setter's hmWord is right here,
             // so resolve locally; over the link the setter's device answers.
-            if(word[0]){
+            if(hmWord[0]){
                 uint16_t mask=0;
-                for(int i=0;i<wordLen&&i<16;i++) if(word[i]==c) mask|=(1u<<i);
+                for(int i=0;i<wordLen&&i<16;i++) if(hmWord[i]==c) mask|=(1u<<i);
                 mv.len=4; mv.data[2]=(uint8_t)(mask&0xFF); mv.data[3]=(uint8_t)(mask>>8);
             }
             pbSubmitMove(&mv);
@@ -147,7 +147,7 @@ static void hmTick(){
         return;
     }
     // the SETTER's device answers a guess it sees with the matching positions
-    // (handled inside hmApply on the setter, which holds `word`)
+    // (handled inside hmApply on the setter, which holds `hmWord`)
 }
 
 static bool hmOver(int* winner){
@@ -206,21 +206,21 @@ static void hmDraw(){
     if(settingPhase){
         fb.setTextColor(TEAL_LIGHT);
         if(amSetter()){
-            fb.drawString("set the word",W/2,26,1);
+            fb.drawString("set the hmWord",W/2,26,1);
             // masked so a shoulder-surfer can't read it
             char mask[HM_MAX_WORD+1]; const char* t=pbkbd::text();
             int n=0; for(;t[n]&&n<HM_MAX_WORD;n++) mask[n]='*'; mask[n]='\0';
             fb.setTextColor(LIME); fb.drawString(mask,W/2,44,4);
         } else {
             fb.drawString(pbPlayerName(setterSeat),W/2,26,1);
-            fb.drawString("is picking a word",W/2,40,1);
+            fb.drawString("is picking a hmWord",W/2,40,1);
             drawCowboyMantis(W/2,150);
             fb.setTextDatum(BC_DATUM); fb.setTextColor(TEAL_DARK);
             fb.drawString("hold your horses",W/2,H-4,1);
             return;
         }
     } else {
-        // the word so far
+        // the hmWord so far
         fb.setTextDatum(TC_DATUM); fb.setTextColor(LIME_PALE);
         char sp[HM_MAX_WORD*2+1]; int k=0;
         for(int i=0;i<wordLen&&k<HM_MAX_WORD*2-1;i++){ sp[k++]=shown[i]; sp[k++]=' '; }
@@ -239,7 +239,7 @@ static void hmDraw(){
             fb.setTextDatum(MC_DATUM);
             fb.setTextColor(guessersWon?LIME:PURPLE_BRIGHT);
             fb.drawString(guessersWon?"WORD CRACKED!":"OUT OF CHAMBERS",W/2,150,2);
-            if(!guessersWon&&word[0]){ fb.setTextColor(LIME_PALE); fb.drawString(word,W/2,175,2); }
+            if(!guessersWon&&hmWord[0]){ fb.setTextColor(LIME_PALE); fb.drawString(hmWord,W/2,175,2); }
             fb.setTextDatum(BC_DATUM); fb.setTextColor(TEAL_DARK);
             fb.drawString("R: rematch   L: game list",W/2,H-4,1);
             return;

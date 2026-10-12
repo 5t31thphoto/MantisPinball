@@ -44,9 +44,9 @@ static const char* g_colorName[6] = {"WHT","RED","GRN","YEL","ORG","BLU"};
 static const char* g_faceName[6]  = {"UP","RIGHT","FRONT","DOWN","LEFT","BACK"};
 static const char  g_moveFace[6]  = {'U','R','F','D','L','B'};
 
-enum class State { INPUT, ORIENT, VERIFY, EDIT, SOLVING, SOLVE, ERROR, WIN };
+enum class State { ENTRY, ORIENT, VERIFY, EDIT, SOLVING, SOLVE, ERROR, WIN };
 
-static State g_state = State::INPUT;
+static State g_state = State::ENTRY;
 static int g_face = 0, g_pos = 0, g_colorSel = 0;
 static int g_verifyFace = 0, g_solIdx = 0;
 static uint32_t g_lHold = 0;
@@ -383,7 +383,7 @@ void rubiksEnter(){
     }
     initVerts();
     for(int f=0;f<6;f++) for(int s=0;s<9;s++) g_stickers[f*9+s]=(uint8_t)f;
-    g_state=State::INPUT;
+    g_state=State::ENTRY;
     g_face=0; g_pos=0; g_colorSel=0; g_verifyFace=0; g_solIdx=0;
     g_lHeld=false; g_spin=0;
     g_job.running=false; g_job.complete=false;
@@ -405,7 +405,7 @@ void rubiksTick(){
     }
 
     switch(g_state){
-    case State::INPUT:
+    case State::ENTRY:
         if(lEdge){ g_colorSel=(g_colorSel+1)%6; }
         if(rEdge){
             g_stickers[g_face*9+g_pos]=(uint8_t)g_colorSel;
@@ -423,7 +423,7 @@ void rubiksTick(){
         break;
 
     case State::ORIENT:
-        if(rEdge) g_state=State::INPUT;
+        if(rEdge) g_state=State::ENTRY;
         break;
 
     case State::VERIFY:
@@ -483,7 +483,7 @@ void rubiksTick(){
 
 void rubiksDraw(){
     switch(g_state){
-    case State::INPUT:   drawInput();   break;
+    case State::ENTRY:   drawInput();   break;
     case State::ORIENT:  drawOrient();  break;
     case State::VERIFY:  drawVerify();  break;
     case State::EDIT:    drawEdit();    break;
