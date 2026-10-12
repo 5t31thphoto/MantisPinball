@@ -35,7 +35,7 @@ struct McSolverJob {
 
 namespace {
 
-McSolverJob* g_job = nullptr;
+McSolverJob* g_mcRunningJob = nullptr;
 TaskHandle_t g_solverTask = nullptr;
 
 bool mcTaskYield(McProgress& p, void* user) {
@@ -81,7 +81,7 @@ inline bool mcSolveAsync(McSolverJob& job, const McCube& start,
     job.progress.phase = 0;
     job.progress.bestLength = 0;
     job.progress.statesSeen = 0;
-    g_job = &job;
+    g_mcRunningJob = &job;
 
     BaseType_t ok = xTaskCreatePinnedToCore(
         mcSolverEntry, "mcSolve", stackWords, &job, 1, &g_solverTask, 0);
