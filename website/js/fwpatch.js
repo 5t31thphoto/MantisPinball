@@ -135,3 +135,81 @@ export async function patchSplash(original, packed) {
   if (!v.ok) throw new Error("patched image failed verification: " + v.why);
   return img;
 }
+
+// ── colour scheme ─────────────────────────────────────────────────────────────
+// The firmware's palette lives in a tagged block (src/theme_runtime.cpp):
+//   char magic[16] "MANTIS_THEME_1" | u32 version | u32 explicit | u32 nonce | u16 pal[14]
+// deriveShades() is tools/intro_designer.py derive_shades() exactly - including
+// Python's round-half-to-even - so the website and the tkinter installer turn
+// the same three colours into the same 14 shades.
+export const THEME_MAGIC = new TextEncoder().encode("MANTIS_THEME_1\0\0");
+export const THEME_SIZE = 56;
+export const THEME_ORDER = ["TEAL_DEEP", "TEAL_DARK", "TEAL", "TEAL_BRIGHT", "TEAL_LIGHT",
+  "PURPLE_DEEP", "PURPLE_DARK", "PURPLE", "PURPLE_BRIGHT", "PURPLE_LIGHT",
+  "LIME_DARK", "LIME_MED", "LIME", "LIME_PALE"];
+
+function pyRound(x) {                       // Python 3 round(): halves go to even
+  const f = Math.floor(x), d = x - f;
+  if (d > 0.5) return f + 1;
+  if (d < 0.5) return f;
+  return (f % 2 === 0) ? f : f + 1;
+}
+const lerpBlack = (rgb, t) => rgb.map(c => pyRound(c * t));
+const scaleClamp = (rgb, k) => rgb.map(c => Math.max(0, Math.min(255, pyRound(c * k))));
+const lerpWhite = (rgb, t) => rgb.map(c => pyRound(c + (255 - c) * t));
+const light = (rgb, s, w) => lerpWhite(scaleClamp(rgb, s), w);
+export const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.replace("#", "").padStart(6, "0").slice(i - 1, i + 1), 16));
+export const rgbToHex = c => "#" + c.map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0")).join("");
+export function rgb565(r, g, b) { return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3); }
+export function rgb565ToHex(v) {                      // what the panel actually shows
+  const r = (v >> 11) & 31, g = (v >> 5) & 63, b = v & 31;
+  return rgbToHex([Math.round(r * 255 / 31), Math.round(g * 255 / 63), Math.round(b * 255 / 31)]);
+}
+
+export function deriveShades(teal, purple, lime) {
+  return {
+    TEAL_DEEP: lerpBlack(teal, 0.30), TEAL_DARK: lerpBlack(teal, 0.52), TEAL: teal.slice(),
+    TEAL_BRIGHT: scaleClamp(teal, 1.56), TEAL_LIGHT: light(teal, 1.91, 0.20),
+    PURPLE_DEEP: lerpBlack(purple, 0.27), PURPLE_DARK: lerpBlack(purple, 0.54), PURPLE: purple.slice(),
+    PURPLE_BRIGHT: scaleClamp(purple, 1.61), PURPLE_LIGHT: light(purple, 2.36, 0.20),
+    LIME_DARK: lerpBlack(lime, 0.31), LIME_MED: lerpBlack(lime, 0.63), LIME: lime.slice(),
+    LIME_PALE: lerpWhite(lime, 0.70),
+  };
+}
+
+export function themeNonce(shades) {                 // == intro_designer.theme_nonce()
+  let h = 2166136261 >>> 0;
+  for (const n of THEME_ORDER) for (const c of shades[n]) {
+    h = (h ^ Math.max(0, Math.min(255, c))) >>> 0;
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h || 1;
+}
+
+export function readTheme(img) {
+  const hits = findAll(img, THEME_MAGIC);
+  if (hits.length !== 1) throw new Error(`expected 1 colour block, found ${hits.length}`);
+  const at = hits[0], dv = new DataView(img.buffer, img.byteOffset);
+  const pal = []; for (let i = 0; i < 14; i++) pal.push(dv.getUint16(at + 28 + i * 2, true));
+  return { at, version: dv.getUint32(at + 16, true), explicit: dv.getUint32(at + 20, true),
+           nonce: dv.getUint32(at + 24, true), pal };
+}
+
+// Patch the chosen colours in. explicit=1 tells the board "these were chosen
+// for this flash": it adopts them once and then keeps them across updates.
+export async function patchTheme(original, shades) {
+  const img = new Uint8Array(original);
+  const L = parseAppImage(img);
+  const th = readTheme(img);
+  if (th.version !== 1) throw new Error("unknown colour block version " + th.version);
+  if (!L.segs.find(s => th.at >= s.data && th.at + THEME_SIZE <= s.data + s.len))
+    throw new Error("colour block is not wholly inside one segment");
+  const dv = new DataView(img.buffer, img.byteOffset);
+  dv.setUint32(th.at + 20, 1, true);
+  dv.setUint32(th.at + 24, themeNonce(shades), true);
+  THEME_ORDER.forEach((n, i) => dv.setUint16(th.at + 28 + i * 2, rgb565(...shades[n]), true));
+  await fixImage(img);
+  const v = await verifyImage(img);
+  if (!v.ok) throw new Error("patched image failed verification: " + v.why);
+  return img;
+}

@@ -114,48 +114,48 @@ static constexpr int H = 320;
 //static constexpr uint16_t LIME_PALE    = rgb565(180, 255, 180);
 
 // Game-element aliases
-static constexpr uint16_t C_BG         = TEAL_DEEP;
-static constexpr uint16_t C_BG_FLASH   = PURPLE_DARK;
-static constexpr uint16_t C_WALL       = TEAL;
-static constexpr uint16_t C_WALL_HI    = TEAL_BRIGHT;
-static constexpr uint16_t C_FUNNEL     = TEAL_DARK;
+#define C_BG (TEAL_DEEP)
+#define C_BG_FLASH (PURPLE_DARK)
+#define C_WALL (TEAL)
+#define C_WALL_HI (TEAL_BRIGHT)
+#define C_FUNNEL (TEAL_DARK)
 
-static constexpr uint16_t C_TARGET     = PURPLE;
-static constexpr uint16_t C_TARGET_HI  = PURPLE_BRIGHT;
-static constexpr uint16_t C_TARGET_HVY = PURPLE_LIGHT;
-static constexpr uint16_t C_TARGET_EXP = LIME;
+#define C_TARGET (PURPLE)
+#define C_TARGET_HI (PURPLE_BRIGHT)
+#define C_TARGET_HVY (PURPLE_LIGHT)
+#define C_TARGET_EXP (LIME)
 
-static constexpr uint16_t C_BUMPER     = PURPLE_BRIGHT;
-static constexpr uint16_t C_BUMPER_RIM = PURPLE_LIGHT;
-static constexpr uint16_t C_BUMPER_HIT = LIME_PALE;
+#define C_BUMPER (PURPLE_BRIGHT)
+#define C_BUMPER_RIM (PURPLE_LIGHT)
+#define C_BUMPER_HIT (LIME_PALE)
 
-static constexpr uint16_t C_FLIPPER    = LIME;
-static constexpr uint16_t C_FLIPPER_OFF= LIME_DARK;
-static constexpr uint16_t C_FLIPPER_PWR= LIME_PALE;
+#define C_FLIPPER (LIME)
+#define C_FLIPPER_OFF (LIME_DARK)
+#define C_FLIPPER_PWR (LIME_PALE)
 
-static constexpr uint16_t C_BALL       = LIME_PALE;
-static constexpr uint16_t C_BALL_CORE  = LIME;
-static constexpr uint16_t C_TRAIL      = LIME_DARK;
+#define C_BALL (LIME_PALE)
+#define C_BALL_CORE (LIME)
+#define C_TRAIL (LIME_DARK)
 
-static constexpr uint16_t C_PWR_SLOW   = TEAL_LIGHT;
-static constexpr uint16_t C_PWR_MULT   = PURPLE_LIGHT;
-static constexpr uint16_t C_PWR_BST    = LIME;
-static constexpr uint16_t C_PWR_PROJ   = LIME_PALE;
-static constexpr uint16_t C_PWR_FLIP   = LIME_PALE;
+#define C_PWR_SLOW (TEAL_LIGHT)
+#define C_PWR_MULT (PURPLE_LIGHT)
+#define C_PWR_BST (LIME)
+#define C_PWR_PROJ (LIME_PALE)
+#define C_PWR_FLIP (LIME_PALE)
 
-static constexpr uint16_t C_PROJ       = LIME;
-static constexpr uint16_t C_PROJ_TRAIL = LIME_DARK;
+#define C_PROJ (LIME)
+#define C_PROJ_TRAIL (LIME_DARK)
 
-static constexpr uint16_t C_HUD        = LIME_PALE;
-static constexpr uint16_t C_HUD_DIM    = TEAL_BRIGHT;
-static constexpr uint16_t C_WARN       = LIME;
+#define C_HUD (LIME_PALE)
+#define C_HUD_DIM (TEAL_BRIGHT)
+#define C_WARN (LIME)
 
 // Intro
-static constexpr uint16_t C_INTRO_BG   = TEAL;            // exact #007373
-static constexpr uint16_t C_INTRO_MAIN = PURPLE;          // exact #5D005D
-static constexpr uint16_t C_INTRO_SUB  = LIME;            // lime green
-static constexpr uint16_t C_INTRO_DIM  = TEAL_DEEP;       // back parallax layer
-static constexpr uint16_t C_INTRO_BACK = TEAL_BRIGHT;     // mid parallax layer
+#define C_INTRO_BG (TEAL)  // exact #007373
+#define C_INTRO_MAIN (PURPLE)  // exact #5D005D
+#define C_INTRO_SUB (LIME)  // lime green
+#define C_INTRO_DIM (TEAL_DEEP)  // back parallax layer
+#define C_INTRO_BACK (TEAL_BRIGHT)  // mid parallax layer
 
 // ---------------- ENTITY LIMITS ----------------
 static constexpr int MAX_BALLS       = 3;
@@ -350,6 +350,8 @@ char          slotsLastWinName[16] = "";
 
 bool     btnL = false, btnR = false;
 bool     btnL_prev = false, btnR_prev = false;
+// Set by the menu when it hands off to an app; read by appInputGuardBegin().
+static bool     g_entryLatch = false;
 uint32_t bothHeldSince = 0;
 
 uint32_t lastFrame = 0;
@@ -1613,14 +1615,14 @@ struct IntroOrb {
 };
 static const IntroOrb INTRO_ORBS[] = {
     // Background layer (slow, big, dim)
-    {  85.0f, 240.0f,  60.0f, 30.0f, 0.008f, 0.00f, 8, PURPLE_DARK },
-    {  85.0f, 280.0f,  70.0f, 20.0f, 0.011f, 2.10f, 7, TEAL_DARK   },
+    {  85.0f, 240.0f,  60.0f, 30.0f, 0.008f, 0.00f, 8, TH_PURPLE_DARK },
+    {  85.0f, 280.0f,  70.0f, 20.0f, 0.011f, 2.10f, 7, TH_TEAL_DARK   },
     // Mid layer
-    {  60.0f,  60.0f,  35.0f, 18.0f, 0.018f, 1.20f, 5, PURPLE      },
-    { 120.0f, 220.0f,  40.0f, 25.0f, 0.020f, 3.50f, 5, LIME_DARK   },
+    {  60.0f,  60.0f,  35.0f, 18.0f, 0.018f, 1.20f, 5, TH_PURPLE      },
+    { 120.0f, 220.0f,  40.0f, 25.0f, 0.020f, 3.50f, 5, TH_LIME_DARK   },
     // Front layer (faster, small, brighter)
-    {  90.0f, 200.0f,  55.0f, 35.0f, 0.030f, 0.80f, 3, LIME_MED    },
-    {  85.0f, 260.0f,  45.0f, 20.0f, 0.035f, 4.20f, 3, PURPLE_LIGHT},
+    {  90.0f, 200.0f,  55.0f, 35.0f, 0.030f, 0.80f, 3, TH_LIME_MED    },
+    {  85.0f, 260.0f,  45.0f, 20.0f, 0.035f, 4.20f, 3, TH_PURPLE_LIGHT},
 };
 static const int INTRO_ORB_COUNT = sizeof(INTRO_ORBS) / sizeof(INTRO_ORBS[0]);
 
@@ -1637,7 +1639,7 @@ static void drawIntro(int frame) {
         int tx = (int)(o.baseX + cosf(a - 0.15f) * o.radiusX);
         int ty = (int)(o.baseY + sinf(a - 0.15f) * o.radiusY);
         fb.fillCircle(tx, ty, o.size > 4 ? o.size - 2 : 1, TEAL_DARK);
-        fb.fillCircle(ox, oy, o.size, o.color);
+        fb.fillCircle(ox, oy, o.size, thc(o.color));
     }
 
     // ---------- Soft horizontal band behind the title block ----------
@@ -3119,6 +3121,7 @@ static void drawSlotsScene() {
 
 // ---------------- SETUP / LOOP ----------------
 void setup() {
+    themeInit();          // colour scheme first: everything below may draw
     pinMode(PIN_LCD_PWR, OUTPUT);
     digitalWrite(PIN_LCD_PWR, HIGH);
 
@@ -3239,7 +3242,6 @@ static void menuClockTickNonBlocking() {
 //    app, plus 350 ms after release to swallow the second click. Same rule as
 //    chord_guard.cpp. Pinball and the other both-button games are not listed,
 //    so both buttons always work there right up until you leave.
-static bool     g_entryLatch = false;
 static bool     g_cgPoison = false;
 static uint32_t g_cgReleasedAt = 0;
 static bool     g_rawL, g_rawR, g_rawLp, g_rawRp, g_appL, g_appR;

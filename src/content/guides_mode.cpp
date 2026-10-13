@@ -7,13 +7,13 @@
 // Each guide is just a ContentMode descriptor pointing at its .pak file.
 // Scout and Survival are topic indexes; First Aid is step-by-step sequences.
 static const ContentMode MODE_SCOUT = {
-    "/content/scout.pak", "SCOUT SKILLS", CK_TOPICS, PURPLE
+    "/content/scout.pak", "SCOUT SKILLS", CK_TOPICS, TH_PURPLE
 };
 static const ContentMode MODE_SURVIVAL = {
-    "/content/survival.pak", "SURVIVAL GUIDE", CK_TOPICS, TEAL_DARK
+    "/content/survival.pak", "SURVIVAL GUIDE", CK_TOPICS, TH_TEAL_DARK
 };
 static const ContentMode MODE_FIRSTAID = {
-    "/content/firstaid.pak", "FIRST AID", CK_SEQUENCE, PURPLE_DARK
+    "/content/firstaid.pak", "FIRST AID", CK_SEQUENCE, TH_PURPLE_DARK
 };
 
 void scoutEnter()    { contentEnter(&MODE_SCOUT); }

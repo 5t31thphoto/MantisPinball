@@ -191,34 +191,66 @@ def write_intro_bitmaps_header(path, lines):
         f.write(GB.emit(blob_lines).encode("utf-8"))
 
 
-def write_theme_header(path, shades, url):
+THEME_ORDER = ["TEAL_DEEP", "TEAL_DARK", "TEAL", "TEAL_BRIGHT", "TEAL_LIGHT",
+               "PURPLE_DEEP", "PURPLE_DARK", "PURPLE", "PURPLE_BRIGHT", "PURPLE_LIGHT",
+               "LIME_DARK", "LIME_MED", "LIME", "LIME_PALE"]
+
+
+def theme_nonce(shades):
+    """FNV-1a over the 14 shades: identifies 'this colour choice'."""
+    h = 2166136261
+    for name in THEME_ORDER:
+        for c in shades[name]:
+            h ^= max(0, min(255, int(c))); h = (h * 16777619) & 0xFFFFFFFF
+    return h or 1
+
+
+def write_theme_header(path, shades, url, explicit=True):
+    """theme_colors.h for the RUNTIME palette.
+
+    The 14 names (TEAL ... LIME_PALE) read g_theme, filled at boot by
+    themeInit() from a patchable block in the firmware (theme_runtime.cpp).
+    explicit=True  -> this build CHOSE these colours (tkinter): the board adopts
+                      them once, then keeps them across later updates.
+    explicit=False -> project defaults (the website build): a board that
+                      already has colours keeps its own.
+    Each default is also written as 'NAME = rgb565(r, g, b)' so tools can read
+    the theme back from this file.
+    """
     with open(path, "w") as f:
         f.write("// theme_colors.h - GENERATED. Edit via tools/intro_designer.py\n")
-        f.write("#pragma once\n")
-        f.write("#include <stdint.h>\n\n")
+        f.write("#pragma once\n#include <stdint.h>\n\n")
         f.write("// rgb565 color packing helper - must appear before all color constants\n")
-        f.write("#ifndef RGB565_DEFINED\n")
-        f.write("#define RGB565_DEFINED\n")
+        f.write("#ifndef RGB565_DEFINED\n#define RGB565_DEFINED\n")
         f.write("static constexpr uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {\n")
         f.write("    return (uint16_t)(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));\n")
-        f.write("}\n")
-        f.write("#endif\n\n")
-        order = ["TEAL_DEEP", "TEAL_DARK", "TEAL", "TEAL_BRIGHT", "TEAL_LIGHT",
-                 "PURPLE_DEEP", "PURPLE_DARK", "PURPLE", "PURPLE_BRIGHT", "PURPLE_LIGHT",
-                 "LIME_DARK", "LIME_MED", "LIME", "LIME_PALE"]
-        for name in order:
-            r, g, b = shades[name]
-            r = max(0, min(255, r)); g = max(0, min(255, g)); b = max(0, min(255, b))
+        f.write("}\n#endif\n\n")
+        f.write("// Runtime palette: 14 shades derived from 3 base colours. themeInit() fills\n")
+        f.write("// it at boot - from this build's colours or the board's saved ones.\n")
+        f.write("struct MantisPalette { uint16_t s[14]; };\n")
+        f.write("extern MantisPalette g_theme;\n")
+        f.write("void themeInit();\n\n")
+        for i, name in enumerate(THEME_ORDER):
+            f.write("#define %-14s (g_theme.s[%d])\n" % (name, i))
+        f.write("\n// Tokens for const tables (a table can't hold a runtime value without\n")
+        f.write("// moving into RAM and freezing the boot-time colour): store TH_x, read via thc().\n")
+        f.write("enum : uint16_t {\n")
+        for i, name in enumerate(THEME_ORDER):
+            f.write("    TH_%s = %d,\n" % (name, i + 1))
+        f.write("};\n")
+        f.write("static inline uint16_t thc(uint16_t c) { return (c >= 1 && c <= 14) ? g_theme.s[c - 1] : c; }\n\n")
+        f.write("#define THEME_EXPLICIT %d\n" % (1 if explicit else 0))
+        f.write("#define THEME_NONCE    0x%08Xu\n" % theme_nonce(shades))
+        f.write("#define THEME_DEFAULTS { \\\n")
+        for name in THEME_ORDER:
+            r, g, b = (max(0, min(255, int(v))) for v in shades[name])
             pad = " " * (14 - len(name))
-            f.write(f"static constexpr uint16_t {name}{pad}= rgb565({r:3d}, {g:3d}, {b:3d});\n")
-        # Escape any quotes in the URL string
+            f.write("    rgb565(%3d, %3d, %3d), /* %s%s= rgb565(%3d, %3d, %3d) */ \\\n" % (r, g, b, name, pad, r, g, b))
+        f.write("}\n")
         safe_url = url.replace('\\', '\\\\').replace('"', '\\"')
-        f.write(f'\n#define INTRO_URL "{safe_url}"\n')
+        f.write('#define INTRO_URL "%s"\n' % safe_url)
 
 
-# ---------------------------------------------------------------------------
-#  Animation preview - mirrors the firmware's drawIntro() in Python
-# ---------------------------------------------------------------------------
 def ease_out_cubic(t):
     if t <= 0: return 0
     if t >= 1: return 1

@@ -1,7 +1,8 @@
 // site.js - Mantis Pinball web installer.
 // The board is flashed with ESP Web Tools. We hand it a manifest we build
 // ourselves so the app part can be the user's splash-patched copy (a blob URL).
-import { readSplash, patchSplash, packBits, LINE_LIMITS, parseAppImage } from "./fwpatch.js";
+import { readSplash, patchSplash, packBits, LINE_LIMITS, parseAppImage,
+         patchTheme, deriveShades, hexToRgb, rgbToHex, rgb565, rgb565ToHex, THEME_ORDER } from "./fwpatch.js";
 
 const $ = (id) => document.getElementById(id);
 const abs = (p) => new URL(p, location.href).href;
@@ -22,6 +23,7 @@ async function init() {
   try { BUILD = await loadJSON("firmware/build.json"); } catch (e) { BUILD = null; }
   renderModes();
   buildEditors();
+  initColors();
   buddy();
   if (!BUILD || !BUILD.parts || !BUILD.parts.length) {
     status("installStatus", "No firmware in this build of the site yet — the GitHub build attaches it.", "bad");
@@ -42,7 +44,7 @@ async function init() {
     $("optSplash").disabled = true;
     status("splashStatus", "This firmware has no customizable splash.", "bad");
   }
-  ["optContent", "optSplash"].forEach(id => $(id).addEventListener("change", refreshManifest));
+  ["optContent", "optSplash", "optColors"].forEach(id => $(id).addEventListener("change", refreshManifest));
   await refreshManifest();
   drawPreviewLoop();
 }
@@ -54,21 +56,33 @@ async function refreshManifest() {
   if (!BUILD) return;
   const parts = BUILD.parts.map(p => ({ path: abs("firmware/" + p.path), offset: p.offset }));
   let note = "Stock splash";
+  let img = null;                                    // untouched download unless something is chosen
   if ($("optSplash").checked) {
     $("installAct").disabled = true;
     status("installStatus", "Writing your splash into the firmware…");
-    try {
-      const img = await patchSplash(FW, currentPacked());
-      if (patchedURL) URL.revokeObjectURL(patchedURL);
-      patchedURL = URL.createObjectURL(new Blob([img], { type: "application/octet-stream" }));
-      parts.find(p => p.path.endsWith("/firmware.bin")).path = patchedURL;
-      note = "Your custom splash";
-    } catch (e) {
+    try { img = await patchSplash(FW, currentPacked()); note = "Your custom splash"; }
+    catch (e) {
       $("optSplash").checked = false;
       status("installStatus", "Splash could not be applied: " + e.message, "bad");
       $("installAct").disabled = false;
       return refreshManifest();
     }
+  }
+  if ($("optColors").checked) {
+    $("installAct").disabled = true;
+    status("installStatus", "Writing your colours into the firmware…");
+    try { img = await patchTheme(img || FW, currentShades()); note += " · your colours"; }
+    catch (e) {
+      $("optColors").checked = false;
+      status("installStatus", "Colours could not be applied: " + e.message, "bad");
+      $("installAct").disabled = false;
+      return refreshManifest();
+    }
+  }
+  if (img) {
+    if (patchedURL) URL.revokeObjectURL(patchedURL);
+    patchedURL = URL.createObjectURL(new Blob([img], { type: "application/octet-stream" }));
+    parts.find(p => p.path.endsWith("/firmware.bin")).path = patchedURL;
   }
   if ($("optContent").checked && BUILD.content) {
     parts.push({ path: abs("firmware/" + BUILD.content.path), offset: BUILD.content.offset });
@@ -263,3 +277,76 @@ function buddy() {
 }
 
 init();
+
+
+// ---------------------------------------------------------------- colours
+// Same three colours as the desktop installer's "THEME COLORS" panel; the 14
+// shades come from deriveShades() (== intro_designer.derive_shades()).
+const PRESETS = [
+  ["Original", "#007373", "#5d005d", "#00ff00"],
+  ["Ocean",    "#0050a0", "#00a0a0", "#80e0ff"],
+  ["Sunset",   "#a03000", "#c00060", "#ffc000"],
+  ["Candy",    "#c03080", "#6020c0", "#40f0d0"],
+  ["Forest",   "#205020", "#604020", "#a0ff40"],
+  ["Night",    "#202060", "#5000a0", "#ff4080"],
+];
+let COL = null, DEF_COL = null, colorTimer = 0;
+function currentShades() { return deriveShades(hexToRgb(COL.teal), hexToRgb(COL.purple), hexToRgb(COL.lime)); }
+function initColors() {
+  const base = n => THEME["_BASE_" + n] || THEME[n] || "#000000";
+  DEF_COL = { teal: base("TEAL"), purple: base("PURPLE"), lime: base("LIME") };
+  COL = { ...DEF_COL };
+  [["colTeal", "teal"], ["colPurple", "purple"], ["colLime", "lime"]].forEach(([id, k]) => {
+    $(id).value = COL[k];
+    $(id).addEventListener("input", e => { COL[k] = e.target.value; colorsChanged(true); });
+  });
+  const pr = $("presets");
+  PRESETS.forEach(([name, t, p, l]) => {
+    const b = document.createElement("button"); b.className = "btn ghost"; b.textContent = name;
+    b.onclick = () => { COL = { teal: t, purple: p, lime: l }; syncInputs(); colorsChanged(true); };
+    pr.appendChild(b);
+  });
+  $("resetColors").onclick = () => { COL = { ...DEF_COL }; syncInputs(); colorsChanged(false); $("optColors").checked = false; refreshManifest(); };
+  colorsChanged(false);
+}
+function syncInputs() { $("colTeal").value = COL.teal; $("colPurple").value = COL.purple; $("colLime").value = COL.lime; }
+function colorsChanged(userChose) {
+  const sh = currentShades();
+  // what the panel actually shows (rgb565), so previews match the board
+  THEME_ORDER.forEach(n => { THEME[n] = rgb565ToHex(rgb565(...sh[n])); });
+  $("hexTeal").textContent = COL.teal; $("hexPurple").textContent = COL.purple; $("hexLime").textContent = COL.lime;
+  const box = $("shades"); box.innerHTML = "";
+  THEME_ORDER.forEach(n => { const d = document.createElement("div"); d.style.background = THEME[n];
+    d.textContent = n.replace("_", " ").toLowerCase(); d.title = n + " " + THEME[n]; box.appendChild(d); });
+  drawMenuPreview();
+  if (userChose) {
+    $("optColors").checked = true;
+    status("colorStatus", "Ticked “Use my colour scheme” in Install — this is what your board will look like.", "ok");
+    clearTimeout(colorTimer); colorTimer = setTimeout(refreshManifest, 350);
+  }
+}
+// drawMenu() from src/main.cpp, in the chosen colours
+function drawMenuPreview() {
+  const cv2 = $("menuPreview"); if (!cv2) return;
+  const g = cv2.getContext("2d"), W2 = 170, H2 = 320, T = n => THEME[n];
+  g.fillStyle = T("TEAL_DEEP"); g.fillRect(0, 0, W2, H2);                      // C_BG
+  g.strokeStyle = T("TEAL"); g.lineWidth = 1; g.strokeRect(0.5, 0.5, W2 - 1, H2 - 1); // C_WALL
+  g.textAlign = "center"; g.textBaseline = "middle";
+  g.fillStyle = T("PURPLE"); g.font = "bold 20px sans-serif"; g.fillText("SELECT MODE", W2 / 2, 26);   // C_INTRO_MAIN
+  g.fillStyle = T("TEAL_BRIGHT"); g.font = "9px monospace"; g.fillText("LEFT step   RIGHT select", W2 / 2, 50);
+  const names = ["PINBALL BLASTER", "CORNER POCKET", "JACKS OR BETTER", "VERSUS PINBALL", "PINBALL SHARING", "PARTY GAME", "MANTIS CHAT", "DANCE PARTY", "QUESTS"];
+  const areaTop = 66, rowH = 26, sel = 1;
+  names.forEach((nm, i) => {
+    const y = areaTop + rowH / 2 + i * rowH; if (y > H2 - 22) return;
+    if (i === sel) {
+      g.fillStyle = T("LIME_DARK"); g.fillRect(8, y - 12, W2 - 16, 24);
+      g.strokeStyle = T("LIME"); g.strokeRect(8.5, y - 11.5, W2 - 17, 23);
+      g.fillStyle = T("LIME");
+      g.beginPath(); g.moveTo(14, y - 5); g.lineTo(14, y + 5); g.lineTo(19, y); g.fill();
+      g.beginPath(); g.moveTo(W2 - 14, y - 5); g.lineTo(W2 - 14, y + 5); g.lineTo(W2 - 19, y); g.fill();
+    }
+    g.fillStyle = i === sel ? T("LIME_PALE") : T("TEAL_BRIGHT"); g.font = "bold 12px sans-serif";
+    g.fillText(nm, W2 / 2, y);
+  });
+  g.fillStyle = T("LIME"); g.fillRect(W2 - 4, 70, 2, 60);                         // scroll bar
+}

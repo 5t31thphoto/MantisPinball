@@ -36,6 +36,8 @@ def theme():
     out = {}
     for name, r, g, b in re.findall(r"(\w+)\s*=\s*rgb565\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", t):
         # what the panel actually shows: quantized to 5/6/5 bits
+        if name in ("TEAL", "PURPLE", "LIME"):          # exact base, for the colour picker
+            out["_BASE_" + name] = f"#{int(r):02x}{int(g):02x}{int(b):02x}"
         r, g, b = int(r) & 0xF8, int(g) & 0xFC, int(b) & 0xF8
         out[name] = f"#{r:02x}{g:02x}{b:02x}"
     url = re.search(r'#define INTRO_URL "(.*)"', t)

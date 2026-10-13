@@ -325,7 +325,7 @@ void contentTick() {
 
 // ---- Rendering ---------------------------------------------------------------
 static void crDrawHeader(const char* txt) {
-    fb.fillRect(0, 0, W, 16, crMode->accent);
+    fb.fillRect(0, 0, W, 16, thc(crMode->accent));
     fb.setTextDatum(ML_DATUM);
     fb.setTextColor(LIME_PALE);
     fb.drawString(txt, 4, 8, 1);
@@ -404,7 +404,7 @@ static void crDrawStep() {
 
 static void crDrawBranch() {
     CREntry& e = crEntries[crCurrent];
-    fb.fillRect(0, 0, W, 16, crMode->accent);
+    fb.fillRect(0, 0, W, 16, thc(crMode->accent));
     fb.setTextDatum(ML_DATUM); fb.setTextColor(LIME_PALE);
     fb.drawString(crMode->title, 4, 8, 1);
     // Story body

@@ -177,16 +177,16 @@ static void drawIcon(uint8_t cat, int x, int y, uint16_t col) {
 // ─────────────────────────────────────────────────────────────────────────────
 struct Waypoint { const char* name; uint16_t at; uint16_t color; };
 static const Waypoint WAYPOINTS[] = {
-    { "START",        0,   TEAL_DARK    },
-    { "GAS STOP",     25,  LIME_DARK    },
-    { "REST AREA",    55,  TEAL_LIGHT   },
-    { "SCENIC VIEW",  90,  TEAL_BRIGHT  },
-    { "SMALL TOWN",   130, LIME_PALE    },
-    { "STATE LINE",   175, PURPLE       },
-    { "MOUNTAIN PASS",225, PURPLE_LIGHT },
-    { "COAST HWY",    280, TEAL_BRIGHT  },
-    { "THE STRIP",    340, LIME         },
-    { "MANTIS DEN",   420, LIME_PALE    },
+    { "START",        0,   TH_TEAL_DARK    },
+    { "GAS STOP",     25,  TH_LIME_DARK    },
+    { "REST AREA",    55,  TH_TEAL_LIGHT   },
+    { "SCENIC VIEW",  90,  TH_TEAL_BRIGHT  },
+    { "SMALL TOWN",   130, TH_LIME_PALE    },
+    { "STATE LINE",   175, TH_PURPLE       },
+    { "MOUNTAIN PASS",225, TH_PURPLE_LIGHT },
+    { "COAST HWY",    280, TH_TEAL_BRIGHT  },
+    { "THE STRIP",    340, TH_LIME         },
+    { "MANTIS DEN",   420, TH_LIME_PALE    },
 };
 static constexpr int NUM_WAYPOINTS = sizeof(WAYPOINTS) / sizeof(WAYPOINTS[0]);
 
@@ -195,14 +195,14 @@ static constexpr int NUM_WAYPOINTS = sizeof(WAYPOINTS) / sizeof(WAYPOINTS[0]);
 // ─────────────────────────────────────────────────────────────────────────────
 struct Trophy { const char* name; const char* desc; uint16_t color; };
 static const Trophy TROPHIES[] = {
-    { "FIRST BLOOD",  "Spot your first thing",    LIME         },
-    { "EAGLE EYE",    "3 rare finds in one trip", PURPLE_LIGHT },
-    { "CLEAN SWEEP",  "Clear a card, no skips",   TEAL_BRIGHT  },
-    { "ROAD WARRIOR", "Score 300+ in one trip",   PURPLE       },
-    { "SOCIALITE",    "Finish a Road Party",      LIME_PALE    },
-    { "CHECKERED FLAG","Win a Road Party",        LIME         },
-    { "MANTIS LORD",  "Spot A REAL MANTIS",       LIME         },
-    { "LONG HAULER",  "Complete 10 trips",        TEAL_LIGHT   },
+    { "FIRST BLOOD",  "Spot your first thing",    TH_LIME         },
+    { "EAGLE EYE",    "3 rare finds in one trip", TH_PURPLE_LIGHT },
+    { "CLEAN SWEEP",  "Clear a card, no skips",   TH_TEAL_BRIGHT  },
+    { "ROAD WARRIOR", "Score 300+ in one trip",   TH_PURPLE       },
+    { "SOCIALITE",    "Finish a Road Party",      TH_LIME_PALE    },
+    { "CHECKERED FLAG","Win a Road Party",        TH_LIME         },
+    { "MANTIS LORD",  "Spot A REAL MANTIS",       TH_LIME         },
+    { "LONG HAULER",  "Complete 10 trips",        TH_TEAL_LIGHT   },
 };
 static constexpr int NUM_TROPHIES = sizeof(TROPHIES) / sizeof(TROPHIES[0]);
 enum { TR_FIRST=0, TR_EAGLE, TR_SWEEP, TR_WARRIOR, TR_SOCIAL, TR_WIN, TR_MANTIS, TR_HAUL };
@@ -961,7 +961,7 @@ static void drawPlay() {
     fb.drawString(buf, W - 4, 22, 1);
 
     fb.setTextDatum(TC_DATUM);
-    fb.setTextColor(WAYPOINTS[waypoint].color);
+    fb.setTextColor(thc(WAYPOINTS[waypoint].color));
     fb.drawString(WAYPOINTS[waypoint].name, W / 2, 22, 1);
 
     drawProgressBar(4, 38, W - 8, 4, rhFoundCount(), CARD_SIZE, LIME);
@@ -1099,11 +1099,11 @@ static void drawMap() {
             int px = 18 + ((i - 1) * (W - 36)) / (NUM_WAYPOINTS - 1);
             fb.drawLine(px, ry[i - 1], fx, ry[i], reached ? TEAL_LIGHT : TEAL_DARK);
         }
-        fb.fillCircle(fx, ry[i], reached ? 5 : 3, reached ? WAYPOINTS[i].color : TEAL_DARK);
+        fb.fillCircle(fx, ry[i], reached ? 5 : 3, reached ? thc(WAYPOINTS[i].color) : TEAL_DARK);
         fb.drawCircle(fx, ry[i], reached ? 5 : 3, TEAL_LIGHT);
     }
     fb.setTextDatum(MC_DATUM);
-    fb.setTextColor(WAYPOINTS[waypoint].color);
+    fb.setTextColor(thc(WAYPOINTS[waypoint].color));
     fb.drawString(WAYPOINTS[waypoint].name, W / 2, 140, 2);
 
     int cx = 18 + (waypoint * (W - 36)) / (NUM_WAYPOINTS - 1);
@@ -1230,7 +1230,7 @@ static void drawResults() {
         fb.drawString(b, W / 2, 166, 1);
     }
 
-    fb.setTextColor(WAYPOINTS[waypoint].color);
+    fb.setTextColor(thc(WAYPOINTS[waypoint].color));
     fb.drawString(WAYPOINTS[waypoint].name, W / 2, 186, 1);
 
     if (newTrophy >= 0 && millis() - trophyAt < 6000) {
@@ -1238,7 +1238,7 @@ static void drawResults() {
         fb.drawRoundRect(10, 202, W - 20, 40, 4, LIME);
         fb.setTextColor(LIME_PALE);
         fb.drawString("TROPHY UNLOCKED", W / 2, 214, 1);
-        fb.setTextColor(TROPHIES[newTrophy].color);
+        fb.setTextColor(thc(TROPHIES[newTrophy].color));
         fb.drawString(TROPHIES[newTrophy].name, W / 2, 231, 1);
     }
 
@@ -1265,7 +1265,7 @@ static void drawTrophies() {
             fb.fillRoundRect(4, y - 2, W - 8, 29, 3, PURPLE_DARK);
             fb.drawRoundRect(4, y - 2, W - 8, 29, 3, LIME_DARK);
         }
-        uint16_t c = un ? TROPHIES[i].color : TEAL_DARK;
+        uint16_t c = un ? thc(TROPHIES[i].color) : TEAL_DARK;
         fb.fillRect(10, y + 5, 12, 12, c);
         fb.drawRect(10, y + 5, 12, 12, un ? TEAL_LIGHT : TEAL_DARK);
         if (!un) {

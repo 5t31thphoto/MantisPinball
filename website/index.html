@@ -138,6 +138,13 @@ footer{margin-top:40px;border-top:1px solid var(--line);padding:30px 0 90px;colo
 footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:700px){footer .wrap{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+  .crow{display:flex;align-items:center;gap:10px;margin:8px 0}
+  .crow label{width:150px;color:#d4dcf6}
+  .crow input[type=color]{width:56px;height:34px;border:0;background:none;padding:0;cursor:pointer}
+  .crow code{color:#9fb0d8}
+  .shades{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0 14px}
+  .shades div{height:38px;border-radius:6px;display:flex;align-items:flex-end;justify-content:center;font:9px monospace;color:#fff;text-shadow:0 0 3px #000;padding-bottom:2px}
+  .presets .btn{padding:6px 10px;font-size:13px}
 </style>
 </head>
 <body>
@@ -216,6 +223,9 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
       <label class="opt"><input type="checkbox" id="optContent" checked>
         <span><b>Also install content</b>
           <small>The offline guides, game packs and aquarium art. Safe to reinstall — it never touches your saves.</small></span></label>
+      <label class="opt"><input type="checkbox" id="optColors">
+        <span><b>Use my colour scheme</b>
+          <small>Pick it below. Leave unticked and the board keeps the colours it already has — updates never reset them.</small></span></label>
       <label class="opt"><input type="checkbox" id="optSplash">
         <span><b>Use my custom splash screen</b>
           <small>Design it below first. Leave unticked to keep the stock splash.</small></span></label>
@@ -257,6 +267,29 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
         <button class="btn ghost" id="resetSplash">Reset</button>
       </div>
       <div class="status" id="splashStatus" style="text-align:center"></div>
+    </div>
+  </div>
+</section>
+
+<section id="colors">
+  <h2 class="sec">Colour scheme</h2>
+  <p class="sub">Three colours, like the desktop installer: every screen on the board is drawn from the shades they make.
+    Your choice is written into the firmware when you install, and the board keeps it through later updates.</p>
+  <div class="designer card">
+    <div>
+      <div class="crow"><label>Primary <small>(teal)</small></label><input type="color" id="colTeal"><code id="hexTeal"></code></div>
+      <div class="crow"><label>Secondary <small>(purple)</small></label><input type="color" id="colPurple"><code id="hexPurple"></code></div>
+      <div class="crow"><label>Accent <small>(lime)</small></label><input type="color" id="colLime"><code id="hexLime"></code></div>
+      <div class="drow presets" id="presets"></div>
+      <h3>All 14 shades</h3>
+      <div class="shades" id="shades"></div>
+      <div class="drow"><button class="btn ghost" id="resetColors">Back to the default colours</button></div>
+      <div class="status" id="colorStatus"></div>
+    </div>
+    <div>
+      <div class="device"><canvas id="menuPreview" width="170" height="320"></canvas>
+        <div class="btns"><span></span><span></span></div></div>
+      <p class="meta" style="text-align:center">The board's menu, in your colours</p>
     </div>
   </div>
 </section>

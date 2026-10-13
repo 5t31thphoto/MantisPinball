@@ -84,18 +84,18 @@ struct Species {
 // harder to farm: unlock capital, slower growth (bigger fish need more feeds,
 // see the size-scaled growth on eat), and they compete for the same pellets.
 static const Species SPECIES[] = {
-    { "Guppy",    TEAL_LIGHT,   TEAL_BRIGHT,  0,   10, 8,   false, false },
-    { "Neon",     LIME,         LIME_PALE,    15,  9,  14,  false, true  },
-    { "Koi",      PURPLE_LIGHT, LIME_PALE,    40,  14, 24,  false, false },
-    { "Angel",    LIME_PALE,    TEAL_LIGHT,   80,  13, 36,  false, false },
-    { "Mantis",   LIME,         PURPLE_LIGHT, 150, 12, 55,  false, true  },  // mascot fish-shrimp
+    { "Guppy",    TH_TEAL_LIGHT,   TH_TEAL_BRIGHT,  0,   10, 8,   false, false },
+    { "Neon",     TH_LIME,         TH_LIME_PALE,    15,  9,  14,  false, true  },
+    { "Koi",      TH_PURPLE_LIGHT, TH_LIME_PALE,    40,  14, 24,  false, false },
+    { "Angel",    TH_LIME_PALE,    TH_TEAL_LIGHT,   80,  13, 36,  false, false },
+    { "Mantis",   TH_LIME,         TH_PURPLE_LIGHT, 150, 12, 55,  false, true  },  // mascot fish-shrimp
     // --- quest-reward exclusive (never appear in the shop) ---
-    { "Lantern",  PURPLE_LIGHT, LIME_PALE,    0,   11, 60,  true,  true  },  // deep-sea glow
-    { "Phantom",  TEAL_LIGHT,   PURPLE_LIGHT, 0,   13, 75,  true,  true  },  // translucent rare
-    { "Dragon",   LIME_PALE,    PURPLE_LIGHT, 0,   16, 100, true,  false },  // big showpiece
+    { "Lantern",  TH_PURPLE_LIGHT, TH_LIME_PALE,    0,   11, 60,  true,  true  },  // deep-sea glow
+    { "Phantom",  TH_TEAL_LIGHT,   TH_PURPLE_LIGHT, 0,   13, 75,  true,  true  },  // translucent rare
+    { "Dragon",   TH_LIME_PALE,    TH_PURPLE_LIGHT, 0,   16, 100, true,  false },  // big showpiece
     // --- live-catch exclusives from Mantis Fishing (never in the shop) ---
-    { "Trout",    TEAL_BRIGHT,  PURPLE_LIGHT, 0,   13,  70, true,  false },  // came in alive
-    { "Salmon",   PURPLE_LIGHT, LIME_PALE,    0,   14,  80, true,  false },  // came in alive
+    { "Trout",    TH_TEAL_BRIGHT,  TH_PURPLE_LIGHT, 0,   13,  70, true,  false },  // came in alive
+    { "Salmon",   TH_PURPLE_LIGHT, TH_LIME_PALE,    0,   14,  80, true,  false },  // came in alive
 };
 
 struct Fish;                              // defined below
@@ -879,7 +879,7 @@ static void drawFishSprite(uint8_t spIdx, int x, int y, int dir, float grow, flo
     bool uv = aqBlackLight;
     int w = (int)lroundf(sinf(ph) * 2.0f);   // tail wiggle offset
     #define FC(c) (uv ? (s.neon ? aqGlowTint(c) : aqDim((c), 3)) : (c))
-    if (uv && s.neon) fb.fillCircle(x, y, sz/2 + 2, aqHalo(s.bodyCol));
+    if (uv && s.neon) fb.fillCircle(x, y, sz/2 + 2, aqHalo(thc(s.bodyCol)));
     switch (spIdx) {
         case 0: {   // Guppy: round body, oversized two-tone fan tail, dark spots
             uint16_t b = FC(TEAL_LIGHT);

@@ -39,9 +39,9 @@
 // Local copies of the game-element aliases used in main.cpp. These match
 // the values main.cpp picks so the miner UI feels visually identical to
 // the rest of the firmware.
-static constexpr uint16_t C_BG      = TEAL_DEEP;
-static constexpr uint16_t C_WALL    = TEAL;
-static constexpr uint16_t C_HUD_DIM = TEAL_BRIGHT;
+#define C_BG (TEAL_DEEP)
+#define C_WALL (TEAL)
+#define C_HUD_DIM (TEAL_BRIGHT)
 
 // Forward decl of the framebuffer sprite from main.cpp - we don't reuse it
 // in landscape because of dimension mismatch, we allocate our own.

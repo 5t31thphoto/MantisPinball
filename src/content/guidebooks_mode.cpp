@@ -33,15 +33,15 @@ struct GuideDef {
     ContentMode  mode;       // reader descriptor (pack path / kind / accent)
 };
 static const GuideDef GUIDES[] = {
-    { 0, "Scout Skills",     { "/content/scout.pak",    "SCOUT SKILLS",    CK_TOPICS,   PURPLE      } },
-    { 1, "Survival Guide",   { "/content/survival.pak", "SURVIVAL GUIDE",  CK_TOPICS,   TEAL_DARK   } },
-    { 2, "First Aid",        { "/content/firstaid.pak", "FIRST AID",       CK_SEQUENCE, PURPLE_DARK } },
-    { 3, "Campfire Cooking", { "/content/campfire.pak", "CAMPFIRE COOKING",CK_TOPICS,   LIME_DARK   } },
-    { 4, "Dutch Oven",       { "/content/dutchoven.pak","DUTCH OVEN",      CK_TOPICS,   PURPLE      } },
-    { 5, "Fishing",          { "/content/fishing.pak",  "FISHING GUIDE",   CK_TOPICS,   TEAL_DARK   } },
-    { 6, "Gold & Rocks",     { "/content/goldrocks.pak","GOLD & ROCKS",    CK_TOPICS,   TEAL        } },
-    { 7, "Foraging",         { "/content/foraging.pak", "WILD FORAGING",   CK_TOPICS,   LIME_DARK   } },
-    { 8, "Orienteering",     { "/content/orienteering.pak","ORIENTEERING",  CK_TOPICS,   PURPLE_DARK } },
+    { 0, "Scout Skills",     { "/content/scout.pak",    "SCOUT SKILLS",    CK_TOPICS,   TH_PURPLE      } },
+    { 1, "Survival Guide",   { "/content/survival.pak", "SURVIVAL GUIDE",  CK_TOPICS,   TH_TEAL_DARK   } },
+    { 2, "First Aid",        { "/content/firstaid.pak", "FIRST AID",       CK_SEQUENCE, TH_PURPLE_DARK } },
+    { 3, "Campfire Cooking", { "/content/campfire.pak", "CAMPFIRE COOKING",CK_TOPICS,   TH_LIME_DARK   } },
+    { 4, "Dutch Oven",       { "/content/dutchoven.pak","DUTCH OVEN",      CK_TOPICS,   TH_PURPLE      } },
+    { 5, "Fishing",          { "/content/fishing.pak",  "FISHING GUIDE",   CK_TOPICS,   TH_TEAL_DARK   } },
+    { 6, "Gold & Rocks",     { "/content/goldrocks.pak","GOLD & ROCKS",    CK_TOPICS,   TH_TEAL        } },
+    { 7, "Foraging",         { "/content/foraging.pak", "WILD FORAGING",   CK_TOPICS,   TH_LIME_DARK   } },
+    { 8, "Orienteering",     { "/content/orienteering.pak","ORIENTEERING",  CK_TOPICS,   TH_PURPLE_DARK } },
 };
 static const int GUIDE_COUNT = sizeof(GUIDES) / sizeof(GUIDES[0]);
 
@@ -159,7 +159,7 @@ void guidebooksDraw() {
         bool sel = (gbTop + r == gbSel);
         if (sel) fb.fillRoundRect(6, y - 2, W - 12, rowH - 6, 4, PURPLE_DARK);
         // accent chip
-        fb.fillRoundRect(12, y + 6, 6, rowH - 18, 2, g.mode.accent);
+        fb.fillRoundRect(12, y + 6, 6, rowH - 18, 2, thc(g.mode.accent));
         fb.setTextDatum(ML_DATUM);
         fb.setTextColor(sel ? LIME_PALE : LIME);
         fb.drawString(g.title, 26, y + 12, 2);

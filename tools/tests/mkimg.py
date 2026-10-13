@@ -7,9 +7,14 @@ def blob_bytes():
     b=bytearray(b"MANTIS_SPLASH_1\x00")+struct.pack("<HHHH",1,4608,3,0)
     for i in range(3): b+=struct.pack("<HHHH",*hdr[i*4:i*4+4])
     b+=data+bytes(4608-len(data)); return bytes(b)
+def theme_bytes():
+    """The colour block exactly as src/theme_runtime.cpp lays it out (56 B)."""
+    pal=[0x0111,0x01E7,0x039C,0x059D,0x379C,0x1803,0x3006,0x580B,0x9012,0xE19C,0x0260,0x0500,0x07E0,0xB7F6]
+    return (bytearray(b"MANTIS_THEME_1\x00\x00")+struct.pack("<III",1,0,0xD501B38D)+struct.pack("<14H",*pal))
+
 def build(path):
     rnd=os.urandom
-    segs=[(0x3C000020, rnd(5000)+blob_bytes()+rnd(3001)),   # rodata holding the blob
+    segs=[(0x3C000020, rnd(5000)+blob_bytes()+rnd(1201)+theme_bytes()+rnd(1744)),   # rodata holding the blob
           (0x3FC88000, rnd(1200)),                          # dram
           (0x42000020, rnd(20007))]                         # irom/text
     out=bytearray([0xE9,len(segs),2,0x4F])+struct.pack("<I",0x40375000)
