@@ -103,6 +103,7 @@ jobs:
           python mkimg.py build app.bin
           node test_fwpatch.mjs
           node test_identity.mjs
+          node test_theme.mjs app.bin
           python mkimg.py verify app_patched.bin
           rm -f app.bin app_patched.bin
           cd ../..
@@ -111,29 +112,34 @@ jobs:
           # then play it through the REAL firmware code on the host
           python tools/gen_psychic.py
           PK="$PWD/data/content/psychic.mpk"
-          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_solo.cpp -o /tmp/psy_solo && /tmp/psy_solo
-          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_perf.cpp -o /tmp/psy_perf && /tmp/psy_perf
+          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_solo.cpp tools/tests/stub/theme_stub.cpp -o /tmp/psy_solo && /tmp/psy_solo
+          g++ -std=gnu++17 -O1 -w -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_perf.cpp tools/tests/stub/theme_stub.cpp -o /tmp/psy_perf && /tmp/psy_perf
           # Psychic driven by the REAL chord guard from the welcome screen
-          g++ -std=gnu++17 -O1 -w -DARDUINO=10814 -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_flow.cpp -o /tmp/psy_flow && /tmp/psy_flow
+          g++ -std=gnu++17 -O1 -w -DARDUINO=10814 -DPACK="\"$PK\"" -I tools/tests/stub -I src tools/tests/test_psychic_flow.cpp tools/tests/stub/theme_stub.cpp -o /tmp/psy_flow && /tmp/psy_flow
           # entry latch + central chord guard, using main.cpp's own code
           g++ -std=gnu++17 -O1 -w tools/tests/test_input_guard.cpp -o /tmp/guard && /tmp/guard
+          # cube visuals: the drawing geometry must turn exactly like the solver's moves
+          g++ -std=gnu++17 -O1 -w -I src/rubiks tools/tests/test_cube3d.cpp src/rubiks/cube_core.cpp -o /tmp/c3d && /tmp/c3d
           # house rule: every app sets up on Enter and frees on Shutdown - 5 cycles each under ASan
           for t in tools/tests/lifecycle/t_*.cpp; do
-            g++ -std=gnu++17 -O1 -w -fsanitize=address,undefined -fno-sanitize-recover=all -DARDUINO=10814 -I tools/tests/stub -I src "$t" -o /tmp/lc && /tmp/lc || exit 1
+            g++ -std=gnu++17 -O1 -w -fsanitize=address,undefined -fno-sanitize-recover=all -DARDUINO=10814 -I tools/tests/stub -I src "$t" tools/tests/stub/theme_stub.cpp -o /tmp/lifecycle_bin && /tmp/lifecycle_bin || exit 1
           done
           # Mantis Chat: MantisNow protocol against frames built from MANTISNOW.md
-          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_mantischat.cpp -o /tmp/chat && /tmp/chat
-          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_danceparty.cpp -o /tmp/dance && /tmp/dance
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_mantischat.cpp tools/tests/stub/theme_stub.cpp -o /tmp/chat && /tmp/chat
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_danceparty.cpp tools/tests/stub/theme_stub.cpp -o /tmp/dance && /tmp/dance
           # two separate Mantis Chat devices type and exchange messages over a simulated air link
-          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_chat_two_devices.cpp -o /tmp/chat2 && timeout 120 /tmp/chat2
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src tools/tests/test_chat_two_devices.cpp tools/tests/stub/theme_stub.cpp -o /tmp/chat2 && timeout 120 /tmp/chat2
           # legacy MNW1 watches + whiteboard, checked against the Core2 MantisChat's own mc_proto.h
-          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src -I tools/tests tools/tests/test_mantischat_legacy_wb.cpp -o /tmp/lwb && /tmp/lwb
+          g++ -std=gnu++17 -O1 -w -I tools/tests/stub -I src -I tools/tests tools/tests/test_mantischat_legacy_wb.cpp tools/tests/stub/theme_stub.cpp -o /tmp/lwb && /tmp/lwb
 
       - name: Generate cube-solver lookup table from the shipped weights
         run: |
           g++ -O2 -I src/rubiks tools/mantis_cube/hosttests/gen_l1table.cpp -o /tmp/gen_l1table
           /tmp/gen_l1table > src/rubiks/cube_l1table.h
           ls -la src/rubiks/cube_l1table.h
+
+      - name: Compile every source on the host first (fast, precise errors)
+        run: python tools/tests/compile_all.py
 
       - name: Build firmware
         # The lookup table adds ~240 KB of flash. If the 3 MB app partition
