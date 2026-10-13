@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mantis Crypto Pinball — install in your browser</title>
+<title>Mantis Crypto Pinball — install from your browser</title>
 <meta name="description" content="A pocket arcade for the LilyGO T-Display S3: pinball, party games, a mantis pet, offline guides and more. Install straight from your browser.">
 <meta property="og:title" content="Mantis Crypto Pinball">
 <meta property="og:description" content="A pocket arcade for the LilyGO T-Display S3. Install from your browser.">
@@ -82,11 +82,12 @@ h2.sec{font-family:Bungee,sans-serif;font-weight:400;font-size:1.7rem;margin:0 0
 .sub{color:var(--dim);margin:0 0 22px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px}
 
-/* storyboard */
-.story{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:820px){.story{grid-template-columns:repeat(2,1fr)}}
-.story figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.story figcaption{font-family:"Press Start 2P",monospace;font-size:.55rem;color:var(--lime);padding:9px 10px;letter-spacing:.05em}
+/* single celebratory gameplay illustration */
+.story{display:flex;justify-content:center}
+.story figure{width:min(100%,760px);margin:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.story img{width:100%;height:auto;display:block;object-fit:contain;background:#070a14}
+.story figcaption{font-family:"Press Start 2P",monospace;font-size:.62rem;color:var(--lime);padding:12px 14px;letter-spacing:.05em;text-align:center}
+
 
 /* install */
 .install{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
@@ -168,7 +169,7 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
       party games for the whole family, a mantis pet, an aquarium, offline survival guides and a mind-reading mantis.
       Install it straight from your browser — no tools, no drivers.</p>
     <div class="cta">
-      <a class="btn primary" href="#install">⚡ Install in your browser</a>
+      <a class="btn primary" href="#install">⚡ Install from your browser</a>
       <a class="btn amazon" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">🛒 Get the T-Display S3</a>
     </div>
   </div>
@@ -186,7 +187,7 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 <div class="support" id="support">
   <img class="ico" src="assets/apple-touch-icon.png" alt="">
   <div>
-    <h2>The only way to support this project</h2>
+    <h2>A great way to support this project</h2>
     <p>Mantis Pinball is free. If you'd like to help keep it going, buy your LilyGO T-Display S3 through this link —
       it costs you nothing extra, and it's the one thing that funds the work.</p>
     <p class="disclose">As an Amazon Associate I earn from qualifying purchases.</p>
@@ -196,7 +197,7 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
 <section id="play">
   <h2 class="sec">How it plays</h2>
-  <p class="sub">Left button, right button. That's the whole controller.</p>
+  <p class="sub">Left button, right button. That's the whole controller. Double click both buttons to open menu. Hold both buttons to turn device off.</p>
   <div class="story">
     <figure><img src="assets/frame1.webp" alt="" loading="lazy"><figcaption>1. IDLE / READY</figcaption></figure>
     <figure><img src="assets/frame2.webp" alt="" loading="lazy"><figcaption>2. FLIPPER PRESS</figcaption></figure>
