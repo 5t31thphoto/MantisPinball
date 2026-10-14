@@ -70,12 +70,22 @@ h1{font-family:Bungee,sans-serif;font-size:clamp(2.4rem,5.4vw,4.2rem);line-heigh
 /* support band */
 .support{margin:46px 0;padding:28px;border-radius:var(--r);
   background:linear-gradient(120deg,rgba(255,154,31,.13),rgba(155,77,255,.12));border:1px solid rgba(255,154,31,.45);
-  display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
-@media(max-width:760px){.support{grid-template-columns:1fr;text-align:center}.support .ico{margin:0 auto}}
-.support .ico{width:84px;height:84px}
+  display:grid;grid-template-columns:auto 1fr 340px;gap:24px;align-items:center}
+@media(max-width:960px){.support{grid-template-columns:1fr;text-align:center}.support .ico{margin:0 auto}}
+.support .ico{width:84px;height:84px;align-self:flex-start}
 .support h2{margin:0 0 6px;font-family:Bungee,sans-serif;font-size:1.35rem;color:var(--btc);font-weight:400}
 .support p{margin:0;color:#dbe2fb}
 .disclose{font-size:.8rem;color:var(--dim);margin-top:8px!important}
+
+/* support products column additions */
+.support-products{display:flex;flex-direction:column;gap:16px}
+.product-card{display:flex;align-items:center;gap:14px;background:rgba(15,21,41,0.6);padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)}
+.product-preview{width:76px;height:76px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border-radius:8px;padding:4px;flex-shrink:0}
+.product-img{max-width:100%;max-height:100%;object-fit:contain}
+.product-info{display:flex;flex-direction:column;gap:6px;flex:1}
+.product-label{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:0.9rem;color:var(--text)}
+.product-info .btn.amazon{padding:6px 12px;font-size:0.78rem;white-space:nowrap;width:fit-content}
+@media(max-width:960px){.support-text .cta{justify-content:center}.product-card{justify-content:center}}
 
 section{padding:38px 0}
 h2.sec{font-family:Bungee,sans-serif;font-weight:400;font-size:1.7rem;margin:0 0 6px;color:var(--lime)}
@@ -185,38 +195,29 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 <main class="wrap">
 
 <div class="support" id="support">
-  <img class="ico" src="assets/apple-touch-icon.png" alt="Mantis Icon">
-  
+  <img class="ico" src="assets/apple-touch-icon.png" alt="">
   <div class="support-text">
-    <h2>A GREAT WAY TO SUPPORT THIS PROJECT</h2>
-    <p>Mantis Pinball is free. If you'd like to help keep it going, buy your LilyGO T-Display S3 through this link — it costs you nothing extra, and it's the one thing that funds the work.</p>
+    <h2>A great way to support this project</h2>
+    <p>Mantis Pinball is free. If you'd like to help keep it going, buy your LilyGO T-Display S3 through this link —
+      it costs you nothing extra, and it's the one thing that funds the work.</p>
     <p class="disclose">As an Amazon Associate I earn from qualifying purchases.</p>
-    
-    <p style="margin-top:18px;color:#dbe2fb">Or leave a tip — every bit helps just click one of the links below send a tip using stripe:</p>
+    <p style="margin-top:14px;color:#dbe2fb">Or leave a tip — every bit helps just click one of the links below send a tip using stripe:</p>
     <div class="cta" style="margin-top:10px">
       <a class="btn ghost" href="https://buy.stripe.com/eVq28q1V371a3d61ai4wM00" target="_blank" rel="noopener">☕ $5</a>
       <a class="btn ghost" href="https://buy.stripe.com/eVq14mbvD71aaFy6uC4wM03" target="_blank" rel="noopener">🍕 $15</a>
       <a class="btn ghost" href="https://buy.stripe.com/7sY14m2Z771a2922em4wM02" target="_blank" rel="noopener">💚 Custom</a>
     </div>
   </div>
-
   <div class="support-products">
-    <!-- Item 1: T-Display S3 -->
     <div class="product-card">
-      <div class="product-preview">
-        <img src="assets/IMG_6596.png" alt="T-Display S3 Device" class="product-img">
-      </div>
+      <div class="product-preview"><img class="product-img" src="assets/IMG_6596.png" alt="T-Display S3"></div>
       <div class="product-info">
         <span class="product-label">T-Display S3</span>
         <a class="btn amazon" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">Buy on Amazon →</a>
       </div>
     </div>
-
-    <!-- Item 2: Optional Battery -->
     <div class="product-card">
-      <div class="product-preview">
-        <img src="assets/IMG_6595.png" alt="Optional Battery" class="product-img">
-      </div>
+      <div class="product-preview"><img class="product-img" src="assets/IMG_6595.png" alt="Optional battery"></div>
       <div class="product-info">
         <span class="product-label">Optional battery</span>
         <a class="btn amazon" href="https://www.amazon.com/dP/B09SV3DMN7/?tag=5t31th-20" target="_blank" rel="sponsored noopener">Buy on Amazon →</a>
