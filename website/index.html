@@ -76,6 +76,18 @@ h1{font-family:Bungee,sans-serif;font-size:clamp(2.4rem,5.4vw,4.2rem);line-heigh
 .support h2{margin:0 0 6px;font-family:Bungee,sans-serif;font-size:1.35rem;color:var(--btc);font-weight:400}
 .support p{margin:0;color:#dbe2fb}
 .disclose{font-size:.8rem;color:var(--dim);margin-top:8px!important}
+.product-thumbs{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:14px 0}
+.product-thumb{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text);max-width:140px}
+.product-thumb img{border-radius:10px;border:1px solid var(--line);background:#0a0e1a;object-fit:contain}
+.product-thumb.device img{height:180px;width:auto}
+.product-thumb.battery img{height:110px;width:auto}
+.product-thumb span{font-size:.78rem;color:var(--dim);margin-top:6px;text-align:center}
+.product-thumb:hover img{border-color:var(--btc);box-shadow:0 0 12px rgba(255,154,31,.35)}
+.product-row{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.product-row .product-thumb{max-width:120px}
+.product-row .product-thumb.device img{height:140px}
+.product-row .product-thumb.battery img{height:90px}
+
 
 section{padding:38px 0}
 h2.sec{font-family:Bungee,sans-serif;font-weight:400;font-size:1.7rem;margin:0 0 6px;color:var(--lime)}
@@ -191,6 +203,12 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
     <p>Mantis Pinball is free. If you'd like to help keep it going, buy your LilyGO T-Display S3 through this link —
       it costs you nothing extra, and it's the one thing that funds the work.</p>
     <p class="disclose">As an Amazon Associate I earn from qualifying purchases.</p>
+    <div class="product-thumbs">
+      <a class="product-thumb device" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">
+        <img src="assets/device-thumb.png" alt="LilyGO T-Display S3 running Mantis Crypto Pinball" width="120" height="200">
+        <span>LilyGO T-Display S3</span>
+      </a>
+    </div>
     <p style="margin-top:14px;color:#dbe2fb">Or leave a tip — every bit helps just click one of the links below send a tip using stripe:</p>
     <div class="cta" style="margin-top:10px">
       <a class="btn ghost" href="https://buy.stripe.com/eVq28q1V371a3d61ai4wM00" target="_blank" rel="noopener">☕ $5</a>
@@ -200,6 +218,7 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   </div>
   <a class="btn amazon" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">Buy on Amazon →</a>
 </div>
+
 
 <section id="play">
   <h2 class="sec">How it plays</h2>
@@ -247,9 +266,23 @@ footer .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
       <p style="color:#d4dcf6">The app, its bootloader and partition table, and (if ticked) the content partition.
         Your saved data lives in a separate area the installer leaves alone unless you choose to erase.</p>
       <p style="color:#d4dcf6">Don't have the board yet?</p>
-      <a class="btn amazon" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">🛒 LilyGO T-Display S3 on Amazon</a>
-      <p class="disclose">As an Amazon Associate I earn from qualifying purchases.</p>
+      <div class="product-row">
+        <a class="product-thumb device" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">
+          <img src="assets/device-thumb.png" alt="LilyGO T-Display S3 running Mantis Crypto Pinball" width="100" height="167">
+          <span>T-Display S3</span>
+        </a>
+        <div>
+          <a class="btn amazon" href="https://www.amazon.com/dp/B0BRTT727Z/?tag=5t31th-20" target="_blank" rel="sponsored noopener">🛒 LilyGO T-Display S3 on Amazon</a>
+          <p style="margin:10px 0 0;color:#d4dcf6">Optional battery (not included):</p>
+          <a class="product-thumb battery" href="https://www.amazon.com/dp/B09SV3DMN7/?tag=5t31th-20" target="_blank" rel="sponsored noopener" style="margin-top:8px">
+            <img src="assets/battery-thumb.png" alt="702250 3.7V 800mAh LiPo battery" width="140" height="108">
+            <span>702250 3.7V 800mAh</span>
+          </a>
+        </div>
+      </div>
+      <p class="disclose">I may earn a commission from qualifying purchases through these links. The battery link is a hardware reference, not a compatibility guarantee; please check suitability for your board.</p>
     </div>
+
   </div>
 </section>
 
